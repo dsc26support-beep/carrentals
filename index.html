@@ -8,730 +8,652 @@
 <title>Tenana Rentals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 
 </head>
 <body>
 <style>
-/* ---------- tokens: light is the base set ---------- */
+/* Catalogue-style page: white ground, magenta accent, thin grey rules.
+   A deliberately single-theme design — every colour is painted explicitly
+   so it holds on any host background. */
 :root {
-  --ground:      #F1F6F5;
-  --surface:     #FFFFFF;
-  --surface-2:   #E4EDEB;
-  --ink:         #08262F;
-  --muted:       #55787F;
-  --line:        #CDDEDA;
-  --lagoon:      #0E9AA0;
-  --lagoon-deep: #075B62;
-  --sun:         #E39A18;
-  --coral:       #D8432A;
-  --coral-ink:   #FFFFFF;
-  --good:        #17795F;
-  --tyre:        #0C2A31;
-  --fab:         #075B62;
-  --fab-ink:     #FFFFFF;
-  --shadow:      0 1px 2px rgba(8,38,47,.06), 0 12px 28px -18px rgba(8,38,47,.45);
-  --radius:      14px;
-  --maxw:        1140px;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ground:      #03212A;
-    --surface:     #06303B;
-    --surface-2:   #0A3F4B;
-    --ink:         #E8F3F0;
-    --muted:       #8DB0B4;
-    --line:        #12505C;
-    --lagoon:      #2FC3C0;
-    --lagoon-deep: #9BE3DD;
-    --sun:         #F5BB4E;
-    --coral:       #FF6A48;
-    --coral-ink:   #2A0A03;
-    --good:        #4FD1A5;
-  --tyre:        #011218;
-  --fab:         #2FC3C0;
-  --fab-ink:     #03212A;
-    --tyre:        #011218;
-    --fab:         #2FC3C0;
-    --fab-ink:     #03212A;
-    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 14px 30px -18px rgba(0,0,0,.8);
-  }
-}
-:root[data-theme="dark"] {
-  --ground:      #03212A;
-  --surface:     #06303B;
-  --surface-2:   #0A3F4B;
-  --ink:         #E8F3F0;
-  --muted:       #8DB0B4;
-  --line:        #12505C;
-  --lagoon:      #2FC3C0;
-  --lagoon-deep: #9BE3DD;
-  --sun:         #F5BB4E;
-  --coral:       #FF6A48;
-  --coral-ink:   #2A0A03;
-  --good:        #4FD1A5;
-  --shadow:      0 1px 2px rgba(0,0,0,.4), 0 14px 30px -18px rgba(0,0,0,.8);
+  --pink:      #E5007D;
+  --pink-dark: #B00062;
+  --pink-pale: #FCEBF4;
+  --note:      #C8102E;
+  --head:      #232323;
+  --ink:       #4A4A4A;
+  --muted:     #7C7C7C;
+  --line:      #DEDEDE;
+  --line-soft: #EDEDED;
+  --panel:     #F8F8F8;
+  --white:     #FFFFFF;
+  --maxw:      1080px;
 }
 
-/* ---------- base ---------- */
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: var(--ground);
+  background: var(--white);
   color: var(--ink);
-  font-family: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 16.5px;
-  line-height: 1.55;
+  font-family: Barlow, Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  padding-bottom: 92px; /* room for the quote bar */
 }
-h1, h2, h3 {
-  font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.02;
-  text-wrap: balance;
+h1, h2, h3, h4 {
+  font-family: "Barlow Semi Condensed", Barlow, Arial, sans-serif;
+  color: var(--head);
   margin: 0;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 p { margin: 0; }
-a { color: inherit; }
-:focus-visible {
-  outline: 3px solid var(--lagoon);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 22px; }
-.section { padding-block: 74px; }
-.eyebrow {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .16em;
+a { color: var(--pink); }
+:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+.wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 24px; }
+/* the tab bar is sticky, so anchors must stop below it */
+section[id], .vehicle[id] { scroll-margin-top: 58px; }
+
+/* ---------- utility strip ---------- */
+.utility { border-bottom: 1px solid var(--line-soft); background: var(--white); }
+.utility .wrap { display: flex; justify-content: flex-end; gap: 26px; padding-block: 9px; }
+.utility a { color: var(--head); text-decoration: none; font-size: 13.5px; font-weight: 500; }
+.utility a:hover { color: var(--pink); }
+
+/* ---------- brand bar ---------- */
+.brandbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 18px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo svg { width: 34px; height: 34px; flex: none; }
+.logo-word {
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-weight: 700; font-size: 26px; letter-spacing: -.01em; color: var(--head);
   text-transform: uppercase;
-  color: var(--lagoon-deep);
 }
-.lede { color: var(--muted); max-width: 62ch; }
-.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.logo-word em { font-style: normal; color: var(--pink); }
+.locale { text-align: right; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.locale strong { display: block; font-family: "Barlow Semi Condensed", sans-serif; font-size: 15px; letter-spacing: .08em; color: var(--pink); }
 
-/* wave band divider — the flag's three water stripes */
-.bands { display: block; width: 100%; height: 14px; }
+/* ---------- tab nav ---------- */
+.tabs { border-block: 1px solid var(--line); background: var(--white); position: sticky; top: 0; z-index: 30; }
+.tabs .wrap { display: flex; gap: 30px; overflow-x: auto; scrollbar-width: none; }
+.tabs .wrap::-webkit-scrollbar { display: none; }
+.tabs a {
+  color: var(--muted); text-decoration: none; white-space: nowrap;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
+  padding: 13px 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tabs a:hover { color: var(--head); }
+.tabs a.on { color: var(--pink); border-bottom-color: var(--pink); }
 
-/* ---------- header ---------- */
-.top {
-  position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--ground) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+/* ---------- category head ---------- */
+.category { padding-top: 40px; }
+.category h1 {
+  color: var(--pink); font-size: clamp(1.9rem, 4vw, 2.5rem); font-weight: 600;
+  letter-spacing: -.005em;
 }
-.top .wrap { display: flex; align-items: center; gap: 18px; height: 62px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
-.brand-mark { width: 30px; height: 30px; flex: none; }
-.brand-name {
-  font-family: "Bricolage Grotesque", sans-serif;
-  font-weight: 800; font-size: 19px; letter-spacing: -.02em;
-}
-.brand-name span { color: var(--lagoon); }
-.top-link { font-size: 14.5px; color: var(--muted); text-decoration: none; }
-.top-link:hover { color: var(--ink); }
-@media (max-width: 720px) { .top-link.hide-sm { display: none; } }
+.category .note { color: var(--note); font-size: 13px; font-weight: 500; margin-top: 8px; max-width: 78ch; }
+.category .sub { color: var(--muted); font-size: 13px; font-style: italic; margin-top: 4px; }
 
-/* ---------- buttons ---------- */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font: inherit; font-weight: 600; font-size: 15px;
-  padding: 11px 18px; border-radius: 10px; border: 1px solid transparent;
-  cursor: pointer; text-decoration: none; white-space: nowrap;
-  transition: transform .12s ease, background-color .15s ease, border-color .15s ease;
+/* ---------- vehicle rows ---------- */
+.vehicle { padding-top: 34px; }
+.vehicle > h2 {
+  font-size: 1.75rem; font-weight: 600; padding-bottom: 8px;
+  border-bottom: 1px solid var(--line); margin-bottom: 18px;
 }
-.btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--coral); color: var(--coral-ink); }
-.btn-primary:hover { background: color-mix(in srgb, var(--coral) 84%, #000); }
-.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-.btn-ghost:hover { border-color: var(--lagoon); color: var(--lagoon-deep); }
+.vehicle-grid { display: grid; grid-template-columns: 1fr 300px; gap: 22px; align-items: stretch; }
+@media (max-width: 800px) { .vehicle-grid { grid-template-columns: 1fr; } }
 
-/* ---------- hero ---------- */
-.hero { position: relative; overflow: hidden; background: var(--surface); border-bottom: 1px solid var(--line); }
-.hero-grid {
-  display: grid; grid-template-columns: 1.05fr .95fr; gap: 46px; align-items: stretch;
-  padding-block: 66px 78px;
+.shot {
+  position: relative; background: var(--panel); border: 1px solid var(--line-soft);
+  display: grid; place-items: center; padding: 26px 24px; min-height: 236px;
 }
-@media (max-width: 940px) { .hero-grid { grid-template-columns: 1fr; gap: 34px; padding-block: 46px 56px; } }
-.hero h1 { font-size: clamp(2.6rem, 6.4vw, 4.35rem); margin-block: 14px 18px; }
-.hero h1 em { font-style: normal; color: var(--lagoon); }
-.hero-lede { font-size: 1.06rem; }
-.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; list-style: none; padding: 0; }
-.facts li {
-  font-size: 13.5px; font-weight: 500;
-  padding: 6px 12px; border-radius: 999px;
-  border: 1px solid var(--line); background: var(--ground); color: var(--muted);
-}
-.hero-art { position: relative; }
-.hero-art { display: flex; align-items: center; }
-.hero-car {
-  width: 100%; height: auto; color: var(--lagoon-deep);
-  background: var(--ground); border: 1px solid var(--line);
-  border-radius: 18px; overflow: hidden;
+.shot svg { width: 100%; max-width: 540px; height: auto; color: var(--head); }
+.shot .plate {
+  position: absolute; left: 0; bottom: 0;
+  background: var(--pink); color: var(--white);
+  font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  padding: 5px 12px;
 }
 
-/* ---------- panel / cards ---------- */
-.panel {
-  background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); box-shadow: var(--shadow);
+.specs { border: 1px solid var(--line); background: var(--white); }
+.specs h3 {
+  color: var(--pink); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
 }
-.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.field > label { font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.spec-list { list-style: none; margin: 0; padding: 0; }
+.spec-list li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid var(--line-soft);
+  font-size: 14px;
+}
+.spec-list li svg { flex: none; color: var(--muted); }
+.rate-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line-soft); background: var(--panel);
+}
+.rate-row .amount {
+  font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-size: 1.7rem;
+  color: var(--head); font-variant-numeric: tabular-nums;
+}
+.rate-row .per { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.pick {
+  display: block; width: 100%; border: 0; cursor: pointer;
+  background: var(--white); color: var(--pink);
+  font: inherit; font-weight: 600; font-size: 13.5px; letter-spacing: .04em;
+  padding: 13px 16px; text-align: center;
+  transition: background-color .15s ease, color .15s ease;
+}
+.pick:hover { background: var(--pink-pale); }
+.vehicle[data-chosen="true"] .specs { border-color: var(--pink); }
+.vehicle[data-chosen="true"] .pick { background: var(--pink); color: var(--white); }
+.blurb { color: var(--muted); font-size: 13.5px; margin-top: 14px; max-width: 92ch; }
+
+/* ---------- reserve block ---------- */
+.band { margin-top: 54px; padding-block: 40px; border-top: 1px solid var(--line); background: var(--white); }
+.band.grey { background: var(--panel); }
+.band + .band { margin-top: 0; }
+.band h2 {
+  font-size: 1.5rem; font-weight: 600; color: var(--head);
+  padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+}
+.section-kicker { font-size: 11.5px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; color: var(--pink); }
+
+.reserve-grid { display: grid; grid-template-columns: 1fr 330px; gap: 26px; align-items: start; }
+@media (max-width: 800px) { .reserve-grid { grid-template-columns: 1fr; } }
+.chosen-line { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+.chosen-line strong { color: var(--head); font-weight: 600; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row + .form-row { margin-top: 14px; }
+@media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--head); }
 input[type="date"], select {
-  font: inherit; font-size: 15px; color: var(--ink);
-  background: var(--ground); border: 1px solid var(--line);
-  border-radius: 9px; padding: 10px 11px; width: 100%; min-width: 0;
+  font: inherit; font-size: 14px; color: var(--ink); background: var(--white);
+  border: 1px solid var(--line); border-radius: 0; padding: 9px 10px; width: 100%; min-width: 0;
   appearance: none;
 }
-input[type="date"] { font-family: "IBM Plex Mono", monospace; font-size: 14px; }
 select {
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
   background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
-  background-size: 6px 6px, 6px 6px;
-  background-repeat: no-repeat;
-  padding-right: 34px;
+  background-size: 6px 6px, 6px 6px; background-repeat: no-repeat;
+  padding-right: 32px;
 }
-input:hover, select:hover { border-color: var(--lagoon); }
+input:hover, select:hover { border-color: var(--muted); }
+.date-err { display: none; margin-top: 12px; color: var(--note); font-size: 13px; font-weight: 500; }
+.date-err.show { display: block; }
 
-/* booking bar in hero */
-.booker { padding: 18px; margin-top: 30px; }
-.booker-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-.booker-row + .booker-row { margin-top: 12px; }
-@media (max-width: 560px) { .booker-row-loc { grid-template-columns: 1fr; } }
-.err {
-  display: none; margin-top: 12px; font-size: 14px; font-weight: 500;
-  color: var(--coral); gap: 8px; align-items: center;
+.extras-head { margin-top: 24px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--head); }
+.extras { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line-soft); }
+.extras li { border-bottom: 1px solid var(--line-soft); }
+.extras label { display: flex; align-items: center; gap: 11px; padding: 10px 2px; cursor: pointer; font-size: 14px; }
+.extras input { width: 16px; height: 16px; accent-color: var(--pink); flex: none; }
+.extras .price { margin-left: auto; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.go {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 22px; padding: 11px 40px; border: 1px solid var(--pink); border-radius: 999px;
+  background: var(--white); color: var(--pink); cursor: pointer;
+  font: inherit; font-weight: 600; font-size: 14.5px; letter-spacing: .03em;
+  transition: background-color .15s ease, color .15s ease;
 }
-.err.show { display: flex; }
+.go:hover { background: var(--pink); color: var(--white); }
 
-/* ---------- fleet ---------- */
-.fleet { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-top: 32px; }
-@media (max-width: 940px) { .fleet { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-@media (max-width: 620px) { .fleet { grid-template-columns: 1fr; } }
-.car {
-  position: relative; text-align: left; cursor: pointer;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 16px 16px 14px; font: inherit; color: inherit;
-  display: flex; flex-direction: column; gap: 4px;
-  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+.summary { border: 1px solid var(--line); }
+.summary h3 {
+  color: var(--pink); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
 }
-.car:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--lagoon); }
-.car[aria-pressed="true"] { border-color: var(--lagoon); box-shadow: inset 0 0 0 1px var(--lagoon), var(--shadow); }
-.car-pick {
-  position: absolute; top: 14px; right: 14px;
-  font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--lagoon-deep); opacity: 0;
+.summary-body { padding: 6px 16px 16px; }
+.summary-lines { list-style: none; margin: 0; padding: 0; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.summary-lines li { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
+.summary-lines li span:first-child { color: var(--muted); }
+.summary-lines li.off span:last-child { color: var(--pink); }
+.summary-total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-top: 14px; }
+.summary-total .k { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--head); }
+.summary-total .v {
+  font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-size: 2rem;
+  color: var(--head); font-variant-numeric: tabular-nums;
 }
-.car[aria-pressed="true"] .car-pick { opacity: 1; }
-.car-art { width: 100%; height: auto; color: var(--lagoon-deep); margin-bottom: 6px; }
-.car[aria-pressed="true"] .car-art { color: var(--coral); }
-.car-class { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.car-name { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 1.22rem; letter-spacing: -.02em; }
-.car-note { font-size: 14px; color: var(--muted); }
-.car-foot { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-top: 13px; border-top: 1px dashed var(--line); }
-.car-rate { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1.05rem; }
-.car-rate small { font-weight: 400; font-size: 12px; color: var(--muted); }
-.car-seats { font-size: 13px; color: var(--muted); }
-
-/* ---------- quote ---------- */
-.quote-grid { display: grid; grid-template-columns: 1fr .85fr; gap: 22px; margin-top: 32px; align-items: start; }
-@media (max-width: 940px) { .quote-grid { grid-template-columns: 1fr; } }
-.extras { padding: 20px; display: flex; flex-direction: column; gap: 2px; }
-.extra {
-  display: flex; align-items: center; gap: 12px; padding: 11px 4px; cursor: pointer;
-  border-bottom: 1px solid var(--line);
+.summary-bond { font-size: 12.5px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.summary-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.summary-actions a {
+  text-align: center; text-decoration: none; font-size: 13.5px; font-weight: 600;
+  padding: 10px 14px; border: 1px solid var(--pink);
 }
-.extra:last-child { border-bottom: 0; }
-.extra input { width: 18px; height: 18px; accent-color: var(--lagoon); flex: none; }
-.extra-name { font-weight: 500; }
-.extra-note { display: block; font-size: 13.5px; color: var(--muted); font-weight: 400; }
-.extra-price { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); white-space: nowrap; }
+.summary-actions .solid { background: var(--pink); color: var(--white); }
+.summary-actions .solid:hover { background: var(--pink-dark); border-color: var(--pink-dark); }
+.summary-actions .hollow { color: var(--pink); }
+.summary-actions .hollow:hover { background: var(--pink-pale); }
 
-.bill { padding: 20px; position: sticky; top: 78px; }
-.bill h3 { font-size: 1.28rem; }
-.bill-sub { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
-.bill-lines { margin: 16px 0 0; padding: 0; list-style: none; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 14px; }
-.bill-lines li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dotted var(--line); }
-.bill-lines li span:first-child { color: var(--muted); font-family: "Instrument Sans", sans-serif; }
-.bill-lines li.discount span:last-child { color: var(--good); }
-.bill-total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 16px; }
-.bill-total .label { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 1.05rem; }
-.bill-total .amount { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 2.1rem; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
-.bond {
-  margin-top: 12px; padding: 10px 12px; border-radius: 10px;
-  background: var(--surface-2); font-size: 13.5px; color: var(--muted);
+/* ---------- plain list sections ---------- */
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px 40px; }
+@media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+.ticks { list-style: none; margin: 0; padding: 0; }
+.ticks li { position: relative; padding: 7px 0 7px 24px; font-size: 14px; border-bottom: 1px solid var(--line-soft); }
+.ticks li::before {
+  content: ""; position: absolute; left: 4px; top: 15px;
+  width: 6px; height: 6px; background: var(--pink); border-radius: 50%;
 }
-.bill-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 16px; }
-.bill-actions .btn { width: 100%; }
+.ticks li b { color: var(--head); font-weight: 600; }
+.pay { width: 100%; border-collapse: collapse; font-size: 14px; }
+.pay th, .pay td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line-soft); }
+.pay th { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.pay td:last-child, .pay th:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pay tbody tr:hover { background: var(--panel); }
+.general { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 26px 40px; }
+@media (max-width: 700px) { .general { grid-template-columns: 1fr; } }
+.general h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 5px; }
+.general p { font-size: 13.5px; color: var(--muted); }
 
-/* ---------- road / pickup points ---------- */
-.road { margin-top: 34px; position: relative; }
-.road-line { position: absolute; left: 14px; right: 14px; top: 13px; height: 2px; background: linear-gradient(90deg, var(--lagoon), var(--sun)); }
-.stops { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; list-style: none; margin: 0; padding: 0; position: relative; }
-@media (max-width: 780px) { .stops { grid-template-columns: repeat(2, 1fr); } .road-line { display: none; } }
-@media (max-width: 420px) { .stops { grid-template-columns: 1fr; } }
-.stop-dot {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--ground); border: 2px solid var(--lagoon);
-  font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+/* ---------- contact + footer ---------- */
+.contact-rows { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+@media (max-width: 700px) { .contact-rows { grid-template-columns: 1fr; } }
+.contact-rows a {
+  display: block; text-decoration: none; border: 1px solid var(--line); padding: 14px 16px; background: var(--white);
 }
-.stop-name { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; margin-top: 12px; }
-.stop-note { font-size: 14px; color: var(--muted); margin-top: 2px; }
-
-/* ---------- terms ---------- */
-.terms { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-top: 30px; }
-@media (max-width: 780px) { .terms { grid-template-columns: 1fr; } }
-.term { padding: 18px 20px; }
-.term h3 { font-size: 1.06rem; margin-bottom: 6px; }
-.term p { font-size: 14.5px; color: var(--muted); }
-.term ul { margin: 8px 0 0; padding-left: 18px; font-size: 14.5px; color: var(--muted); }
-.term li { margin-bottom: 4px; }
-
-/* ---------- contact / footer ---------- */
-.contact { background: var(--surface); border-top: 1px solid var(--line); }
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; align-items: start; }
-@media (max-width: 780px) { .contact-grid { grid-template-columns: 1fr; gap: 24px; } }
-.contact h2 { font-size: clamp(1.9rem, 4.2vw, 2.6rem); }
-.contact-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.contact-list a { display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 12px 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--ground); }
-.contact-list a:hover { border-color: var(--lagoon); }
-.contact-list .k { font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.contact-list .v { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 15px; word-break: break-word; }
-.foot { border-top: 1px solid var(--line); padding-block: 22px; font-size: 13.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; }
-
-/* ---------- persistent quote bar ---------- */
-.qbar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -10px 30px -24px rgba(8,38,47,.9);
-}
-.qbar .wrap { display: flex; align-items: center; gap: 16px; padding-block: 12px; }
-.qbar-who { min-width: 0; }
-.qbar-car { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.qbar-when { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--muted); }
-.qbar-total { margin-left: auto; text-align: right; line-height: 1.1; }
-.qbar-total .k { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.qbar-total .v { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1.45rem; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-@media (max-width: 560px) { .qbar-cta { display: none; } }
+.contact-rows a:hover { border-color: var(--pink); }
+.contact-rows .k { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.contact-rows .v { display: block; margin-top: 3px; font-weight: 600; color: var(--head); font-size: 15px; word-break: break-word; }
+.foot { border-top: 1px solid var(--line); margin-top: 44px; }
+.foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; padding-block: 20px; font-size: 12.5px; color: var(--muted); }
 
 /* ---------- floating call button ---------- */
 .fab {
-  position: fixed; right: 20px; bottom: 90px; z-index: 60;
-  display: inline-flex; align-items: center; gap: 9px;
-  padding: 13px 18px 13px 15px; border-radius: 999px;
-  background: var(--fab); color: var(--fab-ink);
-  font-weight: 600; font-size: 15px; text-decoration: none;
-  box-shadow: 0 6px 16px -6px rgba(8,38,47,.55), 0 2px 5px rgba(8,38,47,.25);
-  transition: transform .15s ease, box-shadow .15s ease;
+  position: fixed; right: 22px; bottom: 22px; z-index: 60;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 20px 13px 16px; border-radius: 999px;
+  background: var(--pink); color: var(--white);
+  font-weight: 600; font-size: 14.5px; text-decoration: none;
+  box-shadow: 0 6px 18px -6px rgba(229,0,125,.6), 0 2px 6px rgba(0,0,0,.18);
+  transition: transform .15s ease, background-color .15s ease;
 }
-.fab:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(8,38,47,.6), 0 3px 6px rgba(8,38,47,.3); }
-.fab:active { transform: translateY(0); }
+.fab:hover { background: var(--pink-dark); transform: translateY(-2px); }
 .fab svg { flex: none; }
-.fab-number { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 13.5px; opacity: .8; }
+.fab .num { display: block; font-size: 12.5px; font-weight: 500; opacity: .9; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) {
-  .fab { right: 14px; bottom: 84px; padding: 13px; }
-  .fab-label, .fab-number { display: none; }
+  .fab { right: 14px; bottom: 14px; padding: 14px; }
+  .fab .label { display: none; }
 }
 
-.flash { animation: flash .45s ease; }
-@keyframes flash { 0% { color: var(--coral); } 100% { color: inherit; } }
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 
-<header class="top">
+<div class="utility">
   <div class="wrap">
-    <a class="brand" href="#top">
-      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="19" fill="var(--lagoon-deep)"></circle>
-        <path d="M4 26h32" stroke="var(--sun)" stroke-width="3" stroke-linecap="round"></path>
-        <path d="M4 31h32" stroke="var(--surface)" stroke-width="2" stroke-linecap="round" opacity=".8"></path>
-        <path d="M9 22v-3l4-5h10l3 5h6v3z" fill="var(--surface)"></path>
-        <circle cx="14" cy="22.5" r="2.4" fill="var(--lagoon-deep)"></circle>
-        <circle cx="27" cy="22.5" r="2.4" fill="var(--lagoon-deep)"></circle>
-      </svg>
-      <span class="brand-name">Tenana<span>.</span></span>
-    </a>
-    <a class="top-link hide-sm" href="#fleet">Fleet</a>
-    <a class="top-link hide-sm" href="#quote">Your quote</a>
-    <a class="top-link hide-sm" href="#pickup">Pick-up</a>
-    <a class="top-link mono" href="tel:+6867305305">+686 7305305</a>
+    <a href="#contact">Contact us</a>
+    <a href="#general">Questions</a>
+    <a href="#delivery">South Tarawa</a>
   </div>
-</header>
+</div>
 
-<main id="top">
-  <!-- ============ HERO ============ -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="eyebrow">Mauri — car hire, South Tarawa</p>
-        <h1>Wheels for the <em>whole atoll</em>.</h1>
-        <p class="lede hero-lede">Tenana Rentals runs a small, well-kept fleet between Betio and Bonriki. Pick your dates, pick your vehicle, and see the full price before you call — no surprises at the counter.</p>
-        <ul class="facts">
-          <li>Airport meet at Bonriki</li>
-          <li>Free delivery Betio&ndash;Bikenibeu</li>
-          <li>Unlimited kilometres</li>
-          <li>Same-day hire when we have a car free</li>
-        </ul>
+<div class="brandbar">
+  <div class="wrap">
+    <a class="logo" href="#top">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="19" fill="var(--pink)"></circle>
+        <path d="M9 24v-4l4-5h11l3.5 5H32v4z" fill="var(--white)"></path>
+        <circle cx="14.5" cy="24.5" r="2.6" fill="var(--pink)"></circle>
+        <circle cx="27" cy="24.5" r="2.6" fill="var(--pink)"></circle>
+      </svg>
+      <span class="logo-word">Tenana<em>.</em></span>
+    </a>
+    <div class="locale">
+      Car hire
+      <strong>Kiribati</strong>
+    </div>
+  </div>
+</div>
 
-        <form class="panel booker" id="booker" autocomplete="off">
-          <div class="booker-row">
+<nav class="tabs" id="top" aria-label="Sections">
+  <div class="wrap">
+    <a href="#fleet" class="on">Fleet</a>
+    <a href="#reserve">Reserve</a>
+    <a href="#delivery">Delivery</a>
+    <a href="#including">Including</a>
+    <a href="#payments">Additional payments</a>
+    <a href="#general">General information</a>
+  </div>
+</nav>
+
+<main>
+  <section class="wrap category" id="fleet">
+    <h1>Everyday hire</h1>
+    <p class="note">A refundable bond is held at hand-over and returned with the keys — $150 for a scooter, $300 for a car, $400 for a 4x4 or van. Rates below are per day in Australian dollars.</p>
+    <p class="sub">Six vehicles, all kept and serviced on-island. Choose one to price your hire.</p>
+
+    <div id="fleet-list"></div>
+  </section>
+
+  <!-- ============ RESERVE ============ -->
+  <section class="band grey" id="reserve">
+    <div class="wrap">
+      <p class="section-kicker">Step 2</p>
+      <h2>Reserve this vehicle</h2>
+
+      <div class="reserve-grid">
+        <form id="booker" autocomplete="off">
+          <p class="chosen-line" id="chosen-line">No vehicle chosen yet — pick one above.</p>
+
+          <div class="form-row">
             <div class="field">
-              <label for="d-from">Pick-up date</label>
-              <input type="date" id="d-from" name="from">
+              <label for="d-from">Collection date</label>
+              <input type="date" id="d-from">
             </div>
             <div class="field">
               <label for="d-to">Return date</label>
-              <input type="date" id="d-to" name="to">
+              <input type="date" id="d-to">
             </div>
           </div>
-          <div class="booker-row booker-row-loc">
+          <div class="form-row">
             <div class="field">
-              <label for="l-from">Pick-up point</label>
+              <label for="l-from">Collection point</label>
               <select id="l-from"></select>
             </div>
             <div class="field">
-              <label for="l-to">Drop-off point</label>
+              <label for="l-to">Return point</label>
               <select id="l-to"></select>
             </div>
           </div>
-          <p class="err" id="date-err" role="alert">
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M8 4.5v4.2M8 11.2v.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
-            <span>The return date needs to be after the pick-up date.</span>
-          </p>
+          <p class="date-err" id="date-err" role="alert">The return date needs to be after the collection date.</p>
+
+          <p class="extras-head">Extras</p>
+          <ul class="extras" id="extras"></ul>
+
+          <button type="submit" class="go">Look for</button>
         </form>
-      </div>
 
-      <div class="hero-art" aria-hidden="true">
-        <svg class="hero-car" viewBox="0 0 420 260" role="img">
-          <!-- lagoon behind the road -->
-          <path d="M0 208 q52 -13 105 0 t105 0 t105 0 t105 0 V260 H0 z" fill="var(--lagoon)" opacity=".18"></path>
-          <path d="M0 222 q52 -13 105 0 t105 0 t105 0 t105 0 V260 H0 z" fill="var(--lagoon)" opacity=".32"></path>
-          <path d="M0 238 q52 -12 105 0 t105 0 t105 0 t105 0 V260 H0 z" fill="var(--lagoon-deep)" opacity=".3"></path>
-          <!-- twin-cab ute, front to the right -->
-          <g transform="translate(-18,0)">
-          <ellipse cx="210" cy="192" rx="150" ry="11" fill="currentColor" opacity=".12"></ellipse>
-          <path d="M40 164 V112 H150 V74 Q150 64 162 64 H236 Q248 64 254 74 L288 112 H352 Q374 114 378 136 V164 Z"
-                fill="currentColor"></path>
-          <path d="M160 78 h34 v30 h-34 z M206 78 h28 q8 0 12 6 l16 24 h-56 z" fill="var(--surface)" opacity=".9"></path>
-          <path d="M40 122 h110" stroke="var(--surface)" stroke-width="4" opacity=".35"></path>
-          <circle cx="112" cy="164" r="30" fill="var(--tyre)"></circle>
-          <circle cx="112" cy="164" r="12" fill="var(--surface)"></circle>
-          <circle cx="316" cy="164" r="30" fill="var(--tyre)"></circle>
-          <circle cx="316" cy="164" r="12" fill="var(--surface)"></circle>
-          <path d="M378 132 h14 q6 0 6 6 t-6 6 h-14 z" fill="var(--sun)"></path>
-          </g>
-        </svg>
-      </div>
-    </div>
-    <svg class="bands" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true">
-      <rect width="100" height="2" y="0" fill="var(--lagoon)"></rect>
-      <rect width="100" height="2" y="2" fill="var(--sun)"></rect>
-      <rect width="100" height="2" y="4" fill="var(--coral)"></rect>
-    </svg>
-  </section>
-
-  <!-- ============ FLEET ============ -->
-  <section class="section" id="fleet">
-    <div class="wrap">
-      <p class="eyebrow">Step 2 &mdash; choose your ride</p>
-      <h2 style="font-size: clamp(1.9rem, 4.4vw, 2.7rem); margin-block: 10px 12px;">Six vehicles, all island-ready</h2>
-      <p class="lede">Every car is serviced on-island and washed of salt after each hire. Tap one and your quote updates straight away.</p>
-      <div class="fleet" id="fleet-grid" role="group" aria-label="Choose a vehicle"></div>
-    </div>
-  </section>
-
-  <!-- ============ QUOTE ============ -->
-  <section class="section" id="quote" style="background: var(--surface); border-block: 1px solid var(--line);">
-    <div class="wrap">
-      <p class="eyebrow">Step 3 &mdash; add what you need</p>
-      <h2 style="font-size: clamp(1.9rem, 4.4vw, 2.7rem); margin-block: 10px 12px;">Your quote, live</h2>
-      <p class="lede">Prices are in Australian dollars, the everyday currency in Kiribati. Everything below is what you would pay us &mdash; nothing is added later.</p>
-
-      <div class="quote-grid">
-        <div class="panel extras" id="extras"></div>
-
-        <aside class="panel bill" aria-labelledby="bill-h">
-          <h3 id="bill-h">Quote summary</h3>
-          <p class="bill-sub" id="bill-sub">Choose your dates and a vehicle.</p>
-          <ul class="bill-lines" id="bill-lines"></ul>
-          <div class="bill-total">
-            <span class="label">Total to pay</span>
-            <span class="amount" id="bill-total" aria-live="polite">$0</span>
-          </div>
-          <p class="bond" id="bill-bond"></p>
-          <div class="bill-actions">
-            <a class="btn btn-primary" id="btn-email" href="#">Email this quote to us</a>
-            <a class="btn btn-ghost" href="tel:+6867305305">Call +686 7305305</a>
+        <aside class="summary" aria-labelledby="sum-h">
+          <h3 id="sum-h">Your price</h3>
+          <div class="summary-body">
+            <ul class="summary-lines" id="sum-lines"></ul>
+            <div class="summary-total">
+              <span class="k">Total to pay</span>
+              <span class="v" id="sum-total" aria-live="polite">$0</span>
+            </div>
+            <p class="summary-bond" id="sum-bond">Choose a vehicle and your dates to see the price.</p>
+            <div class="summary-actions">
+              <a class="solid" id="btn-email" href="#">Email this booking</a>
+              <a class="hollow" href="tel:+6867305305">Call +686 7305305</a>
+            </div>
           </div>
         </aside>
       </div>
     </div>
   </section>
 
-  <!-- ============ PICK-UP POINTS ============ -->
-  <section class="section" id="pickup">
+  <!-- ============ DELIVERY ============ -->
+  <section class="band" id="delivery">
     <div class="wrap">
-      <p class="eyebrow">Along the main road, west to east</p>
-      <h2 style="font-size: clamp(1.9rem, 4.4vw, 2.7rem); margin-block: 10px 12px;">Where we hand over the keys</h2>
-      <p class="lede">South Tarawa is one road, so we come to you. These are our regular hand-over points, in order along the causeway.</p>
-      <div class="road">
-        <div class="road-line" aria-hidden="true"></div>
-        <ol class="stops">
-          <li>
-            <div class="stop-dot">1</div>
-            <div class="stop-name">Betio</div>
-            <p class="stop-note">Port and wharf side. Free hand-over.</p>
-          </li>
-          <li>
-            <div class="stop-dot">2</div>
-            <div class="stop-name">Bairiki</div>
-            <p class="stop-note">Government offices and the square. Free.</p>
-          </li>
-          <li>
-            <div class="stop-dot">3</div>
-            <div class="stop-name">Ambo &amp; Ambo Lagoon</div>
-            <p class="stop-note">Hotel drop-offs. Free.</p>
-          </li>
-          <li>
-            <div class="stop-dot">4</div>
-            <div class="stop-name">Bikenibeu</div>
-            <p class="stop-note">Our yard. Keys any time we are open.</p>
-          </li>
-          <li>
-            <div class="stop-dot">5</div>
-            <div class="stop-name">Bonriki Airport</div>
-            <p class="stop-note">We meet your flight. $15 each way.</p>
-          </li>
-        </ol>
+      <p class="section-kicker">Where we meet you</p>
+      <h2>Delivery</h2>
+      <div class="cols">
+        <ul class="ticks">
+          <li><b>Bikenibeu</b> — our yard, keys any time we are open. Free.</li>
+          <li><b>Betio</b> — port and wharf side. Free.</li>
+          <li><b>Bairiki</b> — government offices and the square. Free.</li>
+        </ul>
+        <ul class="ticks">
+          <li><b>Ambo and Ambo Lagoon</b> — hotel drop-offs. Free.</li>
+          <li><b>Bonriki Airport</b> — we meet your flight. $15 each way.</li>
+          <li><b>Your hotel or house</b> — anywhere on South Tarawa. $20 each way.</li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- ============ TERMS ============ -->
-  <section class="section" id="terms" style="background: var(--surface); border-block: 1px solid var(--line);">
+  <!-- ============ INCLUDING ============ -->
+  <section class="band grey" id="including">
     <div class="wrap">
-      <p class="eyebrow">Before you drive</p>
-      <h2 style="font-size: clamp(1.9rem, 4.4vw, 2.7rem); margin-block: 10px 12px;">The plain rules</h2>
-      <div class="terms">
-        <article class="panel term">
-          <h3>Who can drive</h3>
-          <p>Drivers aged 21 and over with a current licence. Bring your licence and passport or ID to the hand-over &mdash; tell us where your licence was issued when you book and we will confirm what you need to drive here.</p>
-        </article>
-        <article class="panel term">
-          <h3>Fuel and kilometres</h3>
-          <p>Kilometres are unlimited &mdash; Betio to Bonriki as often as you like. Return the tank as you got it, or add prepaid fuel to your quote and hand it back at any level.</p>
-        </article>
-        <article class="panel term">
-          <h3>Bond and damage</h3>
-          <p>A refundable bond is held at hand-over and returned when the car comes back in the same condition. Salt, sand and coral dust are our problem, not yours &mdash; we wash every car after a hire.</p>
-        </article>
-        <article class="panel term">
-          <h3>If something goes wrong</h3>
-          <ul>
-            <li>Call us first, any hour, on 7305305 or 73039089.</li>
-            <li>We come to you anywhere on South Tarawa.</li>
-            <li>If we cannot fix it on the spot, we swap the vehicle.</li>
-            <li>Days you lose to a breakdown are not charged.</li>
-          </ul>
-        </article>
+      <p class="section-kicker">In the price</p>
+      <h2>Including</h2>
+      <div class="cols">
+        <ul class="ticks">
+          <li>Hire of the vehicle for the days you book</li>
+          <li>Unlimited kilometres — Betio to Bonriki as often as you like</li>
+          <li>Free delivery and collection between Betio and Bikenibeu</li>
+        </ul>
+        <ul class="ticks">
+          <li>Help anywhere on South Tarawa, any hour, and a swap if we cannot fix it</li>
+          <li>Days lost to a breakdown are not charged</li>
+          <li>Salt wash and service between every hire</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADDITIONAL PAYMENTS ============ -->
+  <section class="band" id="payments">
+    <div class="wrap">
+      <p class="section-kicker">Charged only if you use them</p>
+      <h2>Additional payments</h2>
+      <table class="pay">
+        <thead>
+          <tr><th>Item</th><th>When it applies</th><th>Amount (AUD)</th></tr>
+        </thead>
+        <tbody id="pay-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ GENERAL INFORMATION ============ -->
+  <section class="band grey" id="general">
+    <div class="wrap">
+      <p class="section-kicker">Before you drive</p>
+      <h2>General information</h2>
+      <div class="general">
+        <div>
+          <h4>Who can drive</h4>
+          <p>Drivers aged 21 and over with a current licence. Bring your licence and passport or ID to the hand-over. Tell us where your licence was issued when you book and we will confirm what you need to drive here.</p>
+        </div>
+        <div>
+          <h4>Fuel</h4>
+          <p>Return the tank as you got it, or add a prepaid full tank to your booking and hand the vehicle back at any level.</p>
+        </div>
+        <div>
+          <h4>Bond</h4>
+          <p>A refundable bond is held at hand-over and returned when the vehicle comes back in the same condition. Salt, sand and coral dust are our problem, not yours.</p>
+        </div>
+        <div>
+          <h4>If something goes wrong</h4>
+          <p>Call 7305305 or 73039089 at any hour. We come to you anywhere on South Tarawa, and swap the vehicle if we cannot fix it on the spot.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ============ CONTACT ============ -->
-  <section class="section contact" id="contact">
-    <div class="wrap contact-grid">
-      <div>
-        <p class="eyebrow">Talk to us</p>
-        <h2 style="margin-block: 10px 12px;">Ready when you are</h2>
-        <p class="lede">Send the quote through and we will confirm the vehicle and the hand-over time. If a car you want is already out, we will tell you straight away and offer the closest one we have.</p>
-      </div>
-      <ul class="contact-list">
-        <li><a href="tel:+6867305305"><span><span class="k">Phone</span><br><span class="v">+686 7305305</span></span></a></li>
-        <li><a href="tel:+68673039089"><span><span class="k">Phone / WhatsApp</span><br><span class="v">+686 73039089</span></span></a></li>
-        <li><a href="mailto:ruuka4climatechange@gmail.com"><span><span class="k">Email</span><br><span class="v">ruuka4climatechange@gmail.com</span></span></a></li>
-      </ul>
-    </div>
+  <section class="band" id="contact">
     <div class="wrap">
-      <div class="foot">
-        <span>&copy; <span id="yr">2026</span> Tenana Rentals &mdash; South Tarawa, Kiribati</span>
-        <span class="mono">Rates in AUD &middot; Bikenibeu yard, open daily</span>
+      <p class="section-kicker">Talk to us</p>
+      <h2>Contact us</h2>
+      <div class="contact-rows">
+        <a href="tel:+6867305305"><span class="k">Phone</span><span class="v">+686 7305305</span></a>
+        <a href="tel:+68673039089"><span class="k">Phone / WhatsApp</span><span class="v">+686 73039089</span></a>
+        <a href="mailto:ruuka4climatechange@gmail.com"><span class="k">Email</span><span class="v">ruuka4climatechange@gmail.com</span></a>
       </div>
     </div>
   </section>
 </main>
 
-<!-- ============ FLOATING CALL BUTTON ============ -->
-<a class="fab" href="tel:+6867305305" aria-label="Call Tenana Rentals on +686 7305305">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M7.6 10.8a13.5 13.5 0 0 0 5.6 5.6l1.9-1.9a1.1 1.1 0 0 1 1.1-.26c1.15.38 2.38.58 3.65.58a1.1 1.1 0 0 1 1.1 1.1v3a1.1 1.1 0 0 1-1.1 1.1A17.1 17.1 0 0 1 2.7 3a1.1 1.1 0 0 1 1.1-1.1h3A1.1 1.1 0 0 1 7.9 3c0 1.27.2 2.5.58 3.65a1.1 1.1 0 0 1-.27 1.12z"
-          fill="currentColor"></path>
-  </svg>
-  <span class="fab-label">Call us<br><span class="fab-number">7305305</span></span>
-</a>
-
-<!-- ============ PERSISTENT QUOTE BAR ============ -->
-<div class="qbar" role="region" aria-label="Running quote">
+<footer class="foot">
   <div class="wrap">
-    <div class="qbar-who">
-      <div class="qbar-car" id="qbar-car">No vehicle chosen</div>
-      <div class="qbar-when" id="qbar-when">&mdash;</div>
-    </div>
-    <div class="qbar-total">
-      <div class="k">Total</div>
-      <div class="v" id="qbar-total">$0</div>
-    </div>
-    <a class="btn btn-primary qbar-cta" href="#quote">See the breakdown</a>
+    <span>&copy; <span id="yr">2026</span> Tenana Rentals — Bikenibeu, South Tarawa, Kiribati</span>
+    <span>Rates in Australian dollars</span>
   </div>
-</div>
+</footer>
+
+<a class="fab" href="tel:+6867305305" aria-label="Call Tenana Rentals on +686 7305305">
+  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7.6 10.8a13.5 13.5 0 0 0 5.6 5.6l1.9-1.9a1.1 1.1 0 0 1 1.1-.26c1.15.38 2.38.58 3.65.58a1.1 1.1 0 0 1 1.1 1.1v3a1.1 1.1 0 0 1-1.1 1.1A17.1 17.1 0 0 1 2.7 3a1.1 1.1 0 0 1 1.1-1.1h3A1.1 1.1 0 0 1 7.9 3c0 1.27.2 2.5.58 3.65a1.1 1.1 0 0 1-.27 1.12z" fill="currentColor"></path>
+  </svg>
+  <span class="label">Call us<span class="num">7305305</span></span>
+</a>
 
 <script>
 (function () {
   "use strict";
 
-  /* ---------- data: edit rates here ---------- */
+  /* ---------- data: edit rates and specs here ---------- */
   var FLEET = [
-    { id: "hilux",   name: "Toyota Hilux 4x4",   cls: "Twin-cab ute",  seats: 5,  rate: 130, bond: 400, art: "ute",
-      note: "The workhorse. Tray for gear, high enough for the rough patches past Bonriki." },
-    { id: "prado",   name: "Land Cruiser Prado", cls: "7-seat wagon",  seats: 7,  rate: 160, bond: 400, art: "wagon",
-      note: "Air-con that copes, room for the whole family and the eskies." },
-    { id: "hiace",   name: "Toyota HiAce",       cls: "12-seat van",   seats: 12, rate: 180, bond: 400, art: "van",
-      note: "Church groups, workshops, airport runs. One trip instead of three." },
-    { id: "corolla", name: "Toyota Corolla",     cls: "Sedan",         seats: 5,  rate: 95,  bond: 300, art: "sedan",
-      note: "Easy on fuel and easy to park in Bairiki. Our most-booked car." },
-    { id: "every",   name: "Suzuki Every",       cls: "Mini van",      seats: 6,  rate: 85,  bond: 300, art: "micro",
-      note: "Small van, small thirst. Good for market runs and light loads." },
-    { id: "scooter", name: "Honda 125cc",        cls: "Scooter",       seats: 2,  rate: 35,  bond: 150, art: "scooter",
-      note: "One road, no traffic, cheapest way to get about. Helmet included." }
+    { id: "hilux", name: "Toyota Hilux 4x4", rate: 130, bond: 400, art: "ute",
+      specs: ["Manual transmission", "5 passengers", "4 doors", "Air-conditioning", "Gasoline, 80 L", "Open tray"],
+      blurb: "A twin-cab ute and the vehicle we hire most to work crews. The tray takes tools, drums and building material, and the ride height clears the rough patches on the stretch past Bonriki. Seats five with the back doors, and the tray takes a load no car will." },
+    { id: "prado", name: "Land Cruiser Prado", rate: 160, bond: 400, art: "wagon",
+      specs: ["Automatic transmission", "7 passengers", "5 doors", "Air-conditioning", "Gasoline, 87 L", "620 L"],
+      blurb: "A seven-seat wagon for families and visiting groups. The air-conditioning copes with a still afternoon, and with the third row folded there is room for eskies, mats and bags for a day at the ocean side." },
+    { id: "hiace", name: "Toyota HiAce", rate: 180, bond: 400, art: "van",
+      specs: ["Manual transmission", "12 passengers", "4 doors", "Air-conditioning", "Diesel, 70 L", "Rear load space"],
+      blurb: "A twelve-seat van for church groups, workshops and airport runs — one trip instead of three. The sliding door and low step make it easy for older passengers, and the rear space still takes luggage with every seat full." },
+    { id: "corolla", name: "Toyota Corolla", rate: 95, bond: 300, art: "sedan",
+      specs: ["Automatic transmission", "5 passengers", "4 doors", "Air-conditioning", "Gasoline, 50 L", "470 L"],
+      blurb: "Our most-booked car. A sedan is easy on fuel, easy to park in Bairiki and comfortable for the run from Betio to the airport. Suited to couples, small families and anyone here for a week of meetings." },
+    { id: "every", name: "Suzuki Every", rate: 85, bond: 300, art: "micro",
+      specs: ["Manual transmission", "6 passengers", "4 doors", "Air-conditioning", "Gasoline, 40 L", "Flat load floor"],
+      blurb: "A small van with a small thirst. Good for market runs, light loads and moving a few people at once when a car is not quite enough and a HiAce is more than you need." },
+    { id: "scooter", name: "Honda 125cc", rate: 35, bond: 150, art: "scooter",
+      specs: ["Automatic, twist and go", "2 riders", "Helmet included", "Open air", "Gasoline, 5 L", "Underseat storage"],
+      blurb: "One road, little traffic and the cheapest way to get about. A 125cc scooter takes a rider and a passenger, uses next to no fuel, and parks anywhere. Helmets come with it." }
   ];
 
   var LOCATIONS = [
-    { id: "yard",    label: "Bikenibeu — our yard",        fee: 0 },
-    { id: "betio",   label: "Betio",                       fee: 0 },
-    { id: "bairiki", label: "Bairiki",                     fee: 0 },
-    { id: "ambo",    label: "Ambo / Ambo Lagoon",          fee: 0 },
-    { id: "airport", label: "Bonriki Airport — we meet you", fee: 15 },
+    { id: "yard",    label: "Bikenibeu — our yard",              fee: 0 },
+    { id: "betio",   label: "Betio",                             fee: 0 },
+    { id: "bairiki", label: "Bairiki",                           fee: 0 },
+    { id: "ambo",    label: "Ambo / Ambo Lagoon",                fee: 0 },
+    { id: "airport", label: "Bonriki Airport — we meet you",     fee: 15 },
     { id: "other",   label: "Your hotel or house (South Tarawa)", fee: 20 }
   ];
 
   var EXTRAS = [
-    { id: "seat",   name: "Child seat",        note: "Fitted and checked before hand-over.", price: 8,  per: "day" },
-    { id: "driver", name: "Second driver",     note: "Anyone else who might take the wheel.", price: 15, per: "hire" },
-    { id: "fuel",   name: "Prepaid full tank", note: "Bring it back at any level.",           price: 45, per: "hire" },
-    { id: "esky",   name: "Esky and two chairs", note: "For the ocean side on a Sunday.",     price: 5,  per: "day" }
+    { id: "seat",   name: "Child seat",          note: "Fitted and checked before hand-over",  price: 8,  per: "day" },
+    { id: "driver", name: "Second driver",       note: "Anyone else who might take the wheel", price: 15, per: "hire" },
+    { id: "fuel",   name: "Prepaid full tank",   note: "Bring it back at any level",           price: 45, per: "hire" },
+    { id: "esky",   name: "Esky and two chairs", note: "For the ocean side on a Sunday",       price: 5,  per: "day" }
   ];
 
-  /* long-hire discounts, applied to the vehicle charge */
   var DISCOUNTS = [
     { days: 21, rate: 0.25, label: "Monthly rate (21+ days)" },
     { days: 7,  rate: 0.15, label: "Weekly rate (7+ days)" },
     { days: 3,  rate: 0.05, label: "3-day rate" }
   ];
 
-  var MIN_HIRE_NOTE = "Minimum hire is one day.";
-
-  /* ---------- state ---------- */
   var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard", extras: {} };
 
   var $ = function (id) { return document.getElementById(id); };
-  var money = function (n) {
-    return "$" + n.toLocaleString("en-AU", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  };
+  var money = function (n) { return "$" + n.toLocaleString("en-AU", { maximumFractionDigits: 0 }); };
   var iso = function (d) { return d.toISOString().slice(0, 10); };
   var pretty = function (s) {
     if (!s) { return "—"; }
     var p = s.split("-");
-    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
-    return d.toLocaleDateString("en-AU", { day: "numeric", month: "short" });
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]))
+      .toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
   };
+
+  /* ---------- spec icons, matched to the row wording ---------- */
+  var ICONS = {
+    gear:  '<circle cx="9" cy="9" r="7.2"/><circle cx="9" cy="9" r="2.4"/><path d="M9 1.8v3M9 13.2v3M1.8 9h3M13.2 9h3"/>',
+    person:'<circle cx="9" cy="5.4" r="3"/><path d="M3.4 16.2c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6"/>',
+    door:  '<rect x="3.4" y="2.4" width="11.2" height="13.2"/><circle cx="11.8" cy="9" r=".9" fill="currentColor" stroke="none"/>',
+    snow:  '<path d="M9 1.8v14.4M2.8 5.4l12.4 7.2M15.2 5.4L2.8 12.6"/>',
+    fuel:  '<path d="M3.6 15.6V3.6a1.2 1.2 0 0 1 1.2-1.2h4.8a1.2 1.2 0 0 1 1.2 1.2v12"/><path d="M2.4 15.6h9.6M11.4 7.2h1.8a1.2 1.2 0 0 1 1.2 1.2v3.6a1.2 1.2 0 0 0 1.2 1.2"/>',
+    boot:  '<rect x="2.4" y="5.4" width="13.2" height="9.6" rx="1"/><path d="M6.6 5.4V3.6a1.2 1.2 0 0 1 1.2-1.2h2.4a1.2 1.2 0 0 1 1.2 1.2v1.8"/>',
+    sun:   '<circle cx="9" cy="9" r="3.6"/><path d="M9 1.2v2.4M9 14.4v2.4M1.2 9h2.4M14.4 9h2.4M3.5 3.5l1.7 1.7M12.8 12.8l1.7 1.7M14.5 3.5l-1.7 1.7M5.2 12.8l-1.7 1.7"/>',
+    helmet:'<path d="M2.4 12.6a6.6 6.6 0 1 1 13.2 0z"/><path d="M2.4 12.6h13.2v1.8a1.2 1.2 0 0 1-1.2 1.2H3.6a1.2 1.2 0 0 1-1.2-1.2z"/>'
+  };
+  function iconFor(text) {
+    var t = text.toLowerCase();
+    var key = t.indexOf("transmission") > -1 || t.indexOf("twist") > -1 ? "gear"
+            : t.indexOf("passenger") > -1 || t.indexOf("rider") > -1 ? "person"
+            : t.indexOf("door") > -1 ? "door"
+            : t.indexOf("air-conditioning") > -1 ? "snow"
+            : t.indexOf("open air") > -1 ? "sun"
+            : t.indexOf("helmet") > -1 ? "helmet"
+            : t.indexOf("gasoline") > -1 || t.indexOf("diesel") > -1 ? "fuel"
+            : "boot";
+    return '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" ' +
+           'stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+           ICONS[key] + '</svg>';
+  }
 
   /* ---------- vehicle silhouettes ---------- */
   function art(kind) {
     var body = {
       ute:   '<path d="M10 62 V44 H70 V26 H112 Q120 26 124 32 L142 44 H182 Q192 46 194 56 V62 Z" fill="currentColor"/>' +
-             '<path d="M76 30 h26 v14 h-26 z M108 30 h6 q5 0 8 4 l8 10 h-22 z" fill="var(--surface)" opacity=".9"/>',
+             '<path d="M76 30 h26 v14 h-26 z M108 30 h6 q5 0 8 4 l8 10 h-22 z" fill="#F8F8F8"/>',
       wagon: '<path d="M10 62 V40 Q10 30 22 30 H120 Q130 30 136 35 L156 46 H182 Q192 48 194 56 V62 Z" fill="currentColor"/>' +
-             '<path d="M22 36 h34 v12 h-34 z M62 36 h48 q6 0 10 4 l8 8 H62 z" fill="var(--surface)" opacity=".9"/>',
+             '<path d="M22 36 h34 v12 h-34 z M62 36 h48 q6 0 10 4 l8 8 H62 z" fill="#F8F8F8"/>',
       van:   '<path d="M10 62 V26 Q10 18 20 18 H126 Q136 18 142 24 L162 44 H182 Q192 46 194 56 V62 Z" fill="currentColor"/>' +
-             '<path d="M22 26 h40 v20 h-40 z M70 26 h50 v20 h-50 z M128 26 h4 l14 18 h-18 z" fill="var(--surface)" opacity=".9"/>',
+             '<path d="M22 26 h40 v20 h-40 z M70 26 h50 v20 h-50 z M128 26 h4 l14 18 h-18 z" fill="#F8F8F8"/>',
       micro: '<path d="M42 62 V22 Q42 14 52 14 H132 Q142 14 147 21 L160 40 H170 Q179 42 180 52 V62 Z" fill="currentColor"/>' +
-             '<path d="M54 24 h34 v20 h-34 z M96 24 h32 v20 h-32 z M134 26 h2 l12 18 h-14 z" fill="var(--surface)" opacity=".9"/>',
+             '<path d="M54 24 h34 v20 h-34 z M96 24 h32 v20 h-32 z M134 26 h2 l12 18 h-14 z" fill="#F8F8F8"/>',
       sedan: '<path d="M10 62 V50 Q22 44 40 43 L66 30 Q74 26 86 26 H120 Q132 26 140 32 L160 46 H182 Q192 48 194 56 V62 Z" fill="currentColor"/>' +
-             '<path d="M52 42 l18 -10 q4 -2 10 -2 h4 v12 z M92 30 h26 q8 0 14 5 l10 7 H92 z" fill="var(--surface)" opacity=".9"/>',
+             '<path d="M52 42 l18 -10 q4 -2 10 -2 h4 v12 z M92 30 h26 q8 0 14 5 l10 7 H92 z" fill="#F8F8F8"/>',
       scooter: '<path d="M44 30 h50 q10 0 13 7 l7 13 h-30 v6 H92 q-24 0 -30 -10 q-4 -6 -4 -16 z" fill="currentColor"/>' +
              '<path d="M114 56 L132 26 q2 -4 7 -4 h7 l-5 11 h-5 L131 56 z" fill="currentColor"/>' +
              '<path d="M136 22 h20" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/>' +
              '<path d="M150 42 q-4 -12 -16 -15" stroke="currentColor" stroke-width="5" stroke-linecap="round" fill="none"/>' +
-             '<path d="M60 34 h26 v10 h-26 z" fill="var(--surface)" opacity=".55"/>'
+             '<path d="M60 34 h26 v10 h-26 z" fill="#F8F8F8" opacity=".6"/>'
     }[kind];
 
-    var axles = {
-      ute: [52, 160], wagon: [52, 160], van: [52, 160], sedan: [52, 160],
-      micro: [70, 152], scooter: [58, 150]
-    }[kind];
+    var axles = { ute: [52, 160], wagon: [52, 160], van: [52, 160], sedan: [52, 160], micro: [70, 152], scooter: [58, 150] }[kind];
     var r = kind === "scooter" ? 14 : 15;
     var cy = kind === "scooter" ? 58 : 62;
 
-    return '<svg class="car-art" viewBox="0 0 204 84" role="img" aria-hidden="true">' +
-      '<ellipse cx="102" cy="76" rx="86" ry="5" fill="currentColor" opacity=".1"/>' +
-      body + wheel(axles[0], cy, r) + wheel(axles[1], cy, r) +
-      '</svg>';
+    return '<svg viewBox="0 0 204 84" role="img" aria-hidden="true">' +
+      '<ellipse cx="102" cy="76" rx="86" ry="5" fill="currentColor" opacity=".08"/>' +
+      body + wheel(axles[0], cy, r) + wheel(axles[1], cy, r) + '</svg>';
   }
   function wheel(cx, cy, r) {
-    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="var(--tyre)"/>' +
-           '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.42) + '" fill="var(--surface)"/>';
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#1A1A1A"/>' +
+           '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * 0.42) + '" fill="#F8F8F8"/>';
   }
 
-  /* ---------- render fleet ---------- */
+  /* ---------- render ---------- */
   function renderFleet() {
-    var grid = $("fleet-grid");
-    grid.innerHTML = FLEET.map(function (c) {
-      return '<button type="button" class="car" data-car="' + c.id + '" aria-pressed="false">' +
-        '<span class="car-pick">Chosen</span>' +
-        art(c.art) +
-        '<span class="car-class">' + c.cls + '</span>' +
-        '<span class="car-name">' + c.name + '</span>' +
-        '<span class="car-note">' + c.note + '</span>' +
-        '<span class="car-foot">' +
-          '<span class="car-rate">' + money(c.rate) + ' <small>/ day</small></span>' +
-          '<span class="car-seats">' + c.seats + ' seats</span>' +
-        '</span>' +
-      '</button>';
+    $("fleet-list").innerHTML = FLEET.map(function (c) {
+      return '<article class="vehicle" id="v-' + c.id + '" data-chosen="false">' +
+        '<h2>' + c.name + '</h2>' +
+        '<div class="vehicle-grid">' +
+          '<div class="shot">' + art(c.art) + '<span class="plate">' + money(c.rate) + ' / day</span></div>' +
+          '<div class="specs">' +
+            '<h3>' + c.name + '</h3>' +
+            '<ul class="spec-list">' +
+              c.specs.map(function (s) { return '<li>' + iconFor(s) + '<span>' + s + '</span></li>'; }).join("") +
+            '</ul>' +
+            '<div class="rate-row"><span class="amount">' + money(c.rate) + '</span><span class="per">Per day</span></div>' +
+            '<button type="button" class="pick" data-car="' + c.id + '">Choose this vehicle</button>' +
+          '</div>' +
+        '</div>' +
+        '<p class="blurb">' + c.blurb + '</p>' +
+      '</article>';
     }).join("");
 
-    grid.addEventListener("click", function (e) {
-      var btn = e.target.closest(".car");
+    $("fleet-list").addEventListener("click", function (e) {
+      var btn = e.target.closest(".pick");
       if (!btn) { return; }
       state.car = btn.dataset.car;
-      Array.prototype.forEach.call(grid.querySelectorAll(".car"), function (b) {
-        b.setAttribute("aria-pressed", String(b === btn));
+      Array.prototype.forEach.call(document.querySelectorAll(".vehicle"), function (v) {
+        v.dataset.chosen = String(v.id === "v-" + state.car);
+      });
+      Array.prototype.forEach.call(document.querySelectorAll(".pick"), function (b) {
+        b.textContent = b.dataset.car === state.car ? "Chosen" : "Choose this vehicle";
       });
       update();
+      $("reserve").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
-  /* ---------- render extras ---------- */
   function renderExtras() {
     $("extras").innerHTML = EXTRAS.map(function (x) {
-      return '<label class="extra">' +
-        '<input type="checkbox" data-extra="' + x.id + '">' +
-        '<span class="extra-name">' + x.name +
-          '<span class="extra-note">' + x.note + '</span>' +
-        '</span>' +
-        '<span class="extra-price">' + money(x.price) + (x.per === "day" ? " / day" : " once") + '</span>' +
-      '</label>';
+      return '<li><label><input type="checkbox" data-extra="' + x.id + '">' +
+        '<span>' + x.name + ' — <span style="color:var(--muted)">' + x.note + '</span></span>' +
+        '<span class="price">' + money(x.price) + (x.per === "day" ? " / day" : " once") + '</span>' +
+      '</label></li>';
     }).join("");
-
     $("extras").addEventListener("change", function (e) {
       var box = e.target.closest("input[data-extra]");
       if (!box) { return; }
@@ -740,10 +662,9 @@ input:hover, select:hover { border-color: var(--lagoon); }
     });
   }
 
-  /* ---------- render locations ---------- */
   function renderLocations() {
     var opts = LOCATIONS.map(function (l) {
-      return '<option value="' + l.id + '">' + l.label + (l.fee ? "  (+" + money(l.fee) + ")" : "") + "</option>";
+      return '<option value="' + l.id + '">' + l.label + (l.fee ? " (+" + money(l.fee) + ")" : "") + "</option>";
     }).join("");
     $("l-from").innerHTML = opts;
     $("l-to").innerHTML = opts;
@@ -751,14 +672,29 @@ input:hover, select:hover { border-color: var(--lagoon); }
     $("l-to").value = state.locTo;
   }
 
+  function renderPayments() {
+    var rows = LOCATIONS.filter(function (l) { return l.fee; }).map(function (l) {
+      return "<tr><td>" + l.label.split("—")[0].trim() + " delivery or collection</td>" +
+             "<td>Each way, if you choose it as a collection or return point</td>" +
+             "<td>" + money(l.fee) + "</td></tr>";
+    });
+    rows = rows.concat(EXTRAS.map(function (x) {
+      return "<tr><td>" + x.name + "</td><td>" + x.note +
+             "</td><td>" + money(x.price) + (x.per === "day" ? " per day" : " per hire") + "</td></tr>";
+    }));
+    rows.push("<tr><td>Refundable bond</td><td>Held at hand-over, returned with the keys</td><td>$150 – $400</td></tr>");
+    $("pay-rows").innerHTML = rows.join("");
+  }
+
   /* ---------- the calculator ---------- */
   function days() {
     if (!state.from || !state.to) { return 0; }
-    var a = new Date(state.from + "T00:00:00");
-    var b = new Date(state.to + "T00:00:00");
-    var d = Math.round((b - a) / 86400000);
+    var d = Math.round((new Date(state.to + "T00:00:00") - new Date(state.from + "T00:00:00")) / 86400000);
     return d > 0 ? d : 0;
   }
+
+  function shortLoc(l) { return l.label.split("—")[0].trim(); }
+  function locById(id) { return LOCATIONS.filter(function (l) { return l.id === id; })[0]; }
 
   function quote() {
     var n = days();
@@ -774,21 +710,15 @@ input:hover, select:hover { border-color: var(--lagoon); }
       var disc = DISCOUNTS.filter(function (d) { return n >= d.days; })[0];
       if (disc) {
         var off = Math.round(hire * disc.rate);
-        lines.push({ k: disc.label, v: "−" + money(off), discount: true });
+        lines.push({ k: disc.label, v: "−" + money(off), off: true });
         total -= off;
       }
     }
 
-    var from = LOCATIONS.filter(function (l) { return l.id === state.locFrom; })[0];
-    var to = LOCATIONS.filter(function (l) { return l.id === state.locTo; })[0];
-    if (from && from.fee) {
-      lines.push({ k: "Pick-up at " + shortLoc(from), v: money(from.fee) });
-      total += from.fee;
-    }
-    if (to && to.fee) {
-      lines.push({ k: "Drop-off at " + shortLoc(to), v: money(to.fee) });
-      total += to.fee;
-    }
+    var from = locById(state.locFrom);
+    var to = locById(state.locTo);
+    if (from && from.fee) { lines.push({ k: "Collection at " + shortLoc(from), v: money(from.fee) }); total += from.fee; }
+    if (to && to.fee) { lines.push({ k: "Return at " + shortLoc(to), v: money(to.fee) }); total += to.fee; }
 
     if (n > 0) {
       EXTRAS.forEach(function (x) {
@@ -802,76 +732,62 @@ input:hover, select:hover { border-color: var(--lagoon); }
     return { lines: lines, total: total, n: n, car: car };
   }
 
-  function shortLoc(l) { return l.label.split("—")[0].trim(); }
-
-  /* ---------- paint ---------- */
-  var lastTotal = 0;
   function update() {
     var q = quote();
-    var valid = !!(state.from && state.to);
-    $("date-err").classList.toggle("show", valid && q.n === 0);
+    $("date-err").classList.toggle("show", !!(state.from && state.to) && q.n === 0);
 
-    $("bill-lines").innerHTML = q.lines.length
-      ? q.lines.map(function (l) {
-          return '<li' + (l.discount ? ' class="discount"' : "") + '><span>' + l.k + '</span><span>' + l.v + '</span></li>';
-        }).join("")
-      : "";
+    $("chosen-line").innerHTML = q.car
+      ? "Chosen: <strong>" + q.car.name + "</strong> at " + money(q.car.rate) + " per day."
+      : "No vehicle chosen yet — pick one above.";
 
-    $("bill-sub").textContent = !q.car
-      ? "Choose a vehicle above and your price appears here."
+    $("sum-lines").innerHTML = q.lines.map(function (l) {
+      return '<li' + (l.off ? ' class="off"' : "") + '><span>' + l.k + '</span><span>' + l.v + '</span></li>';
+    }).join("");
+
+    $("sum-total").textContent = money(q.total);
+    $("sum-bond").textContent = !q.car
+      ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
-        ? "Set a pick-up and return date. " + MIN_HIRE_NOTE
-        : q.car.name + ", " + pretty(state.from) + " to " + pretty(state.to) + ".";
-
-    var totalEl = $("bill-total");
-    totalEl.textContent = money(q.total);
-    $("qbar-total").textContent = money(q.total);
-    if (q.total !== lastTotal) {
-      totalEl.classList.remove("flash");
-      void totalEl.offsetWidth;
-      totalEl.classList.add("flash");
-      lastTotal = q.total;
-    }
-
-    $("bill-bond").textContent = q.car
-      ? "Plus a refundable " + money(q.car.bond) + " bond, held at hand-over and returned with the keys."
-      : MIN_HIRE_NOTE + " Prices include delivery between Betio and Bikenibeu.";
-
-    $("qbar-car").textContent = q.car ? q.car.name : "No vehicle chosen";
-    $("qbar-when").textContent = q.n > 0
-      ? pretty(state.from) + " → " + pretty(state.to) + " · " + q.n + (q.n === 1 ? " day" : " days")
-      : "Pick your dates";
+        ? "Set a collection and return date. Minimum hire is one day."
+        : "Plus a refundable " + money(q.car.bond) + " bond, held at hand-over and returned with the keys.";
 
     $("btn-email").href = mailto(q);
   }
 
   function mailto(q) {
     var lines = [
-      "Mauri Tenana Rentals,",
-      "",
-      "I would like to book:",
-      "",
-      "Vehicle:    " + (q.car ? q.car.name : "not chosen yet"),
-      "Pick-up:    " + (state.from ? pretty(state.from) : "—") + " at " + shortLoc(LOCATIONS.filter(function (l) { return l.id === state.locFrom; })[0]),
-      "Return:     " + (state.to ? pretty(state.to) : "—") + " at " + shortLoc(LOCATIONS.filter(function (l) { return l.id === state.locTo; })[0]),
-      "Days:       " + q.n
+      "Mauri Tenana Rentals,", "", "I would like to book:", "",
+      "Vehicle:     " + (q.car ? q.car.name : "not chosen yet"),
+      "Collection:  " + pretty(state.from) + " at " + shortLoc(locById(state.locFrom)),
+      "Return:      " + pretty(state.to) + " at " + shortLoc(locById(state.locTo)),
+      "Days:        " + q.n
     ];
     var chosen = EXTRAS.filter(function (x) { return state.extras[x.id]; }).map(function (x) { return x.name; });
-    lines.push("Extras:     " + (chosen.length ? chosen.join(", ") : "none"));
-    lines.push("");
+    lines.push("Extras:      " + (chosen.length ? chosen.join(", ") : "none"), "");
     q.lines.forEach(function (l) { lines.push("  " + l.k + " — " + l.v); });
-    lines.push("");
-    lines.push("Quoted total: " + money(q.total) + " AUD");
+    lines.push("", "Quoted total: " + money(q.total) + " AUD");
     if (q.car) { lines.push("Bond: " + money(q.car.bond) + " AUD, refundable"); }
-    lines.push("");
-    lines.push("My name: ");
-    lines.push("Best number to reach me: ");
-    lines.push("Licence issued in: ");
+    lines.push("", "My name: ", "Best number to reach me: ", "Licence issued in: ");
 
     return "mailto:ruuka4climatechange@gmail.com" +
-      "?subject=" + encodeURIComponent("Booking request — " + (q.car ? q.car.name : "vehicle TBC") +
+      "?subject=" + encodeURIComponent("Booking — " + (q.car ? q.car.name : "vehicle to confirm") +
         (q.n ? " — " + pretty(state.from) + " to " + pretty(state.to) : "")) +
       "&body=" + encodeURIComponent(lines.join("\n"));
+  }
+
+  /* ---------- tab highlighting ---------- */
+  function watchTabs() {
+    var links = Array.prototype.slice.call(document.querySelectorAll(".tabs a"));
+    var targets = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        var i = targets.indexOf(en.target);
+        if (i < 0) { return; }
+        links.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    targets.forEach(function (t) { if (t) { obs.observe(t); } });
   }
 
   /* ---------- wire up ---------- */
@@ -884,6 +800,7 @@ input:hover, select:hover { border-color: var(--lagoon); }
     renderFleet();
     renderExtras();
     renderLocations();
+    renderPayments();
 
     var f = $("d-from");
     var t = $("d-to");
@@ -906,9 +823,14 @@ input:hover, select:hover { border-color: var(--lagoon); }
     t.addEventListener("change", function () { state.to = t.value; update(); });
     $("l-from").addEventListener("change", function (e) { state.locFrom = e.target.value; update(); });
     $("l-to").addEventListener("change", function (e) { state.locTo = e.target.value; update(); });
-    $("booker").addEventListener("submit", function (e) { e.preventDefault(); });
+    $("booker").addEventListener("submit", function (e) {
+      e.preventDefault();
+      update();
+      document.querySelector(".summary").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
     $("yr").textContent = String(new Date().getFullYear());
 
+    watchTabs();
     update();
   }
 
