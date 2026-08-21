@@ -4,7 +4,7 @@ Single-page site for **Tenana Rentals** — car, van and scooter hire on South T
 Kiribati. The centrepiece is a live booking calculator: pick dates, a vehicle, a
 hand-over point and any extras, and the quote updates as you go, in AUD.
 
-**Contact:** 7305305 · 73039089 · ruuka4climatechange@gmail.com
+**Contact:** 73053005 · 73039089 · ruuka4climatechange@gmail.com
 
 ## What's here
 
