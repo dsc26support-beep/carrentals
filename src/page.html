@@ -312,8 +312,33 @@ input:hover, select:hover { border-color: var(--muted); }
 /* ---------- plain list sections ---------- */
 .general { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 26px 40px; }
 @media (max-width: 700px) { .general { grid-template-columns: 1fr; } }
-.general h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 5px; }
+.general h4 { font-size: 1.05rem; font-weight: 600; margin: 0; }
 .general p { font-size: 13.5px; color: var(--muted); }
+
+/* Each topic collapses below 1025px. The summary carries the heading, so it
+   stays visible at every width — from 1025px up it simply loses its chevron
+   and initDropdowns() holds the topic open. */
+.gen-drop > summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--line-soft);
+}
+.gen-drop > summary::-webkit-details-marker { display: none; }
+@media (hover: hover) { .gen-drop > summary:hover h4 { color: var(--pink); } }
+.gen-drop > summary::after {
+  content: ""; flex: none;
+  width: 8px; height: 8px; margin-right: 3px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .18s ease;
+}
+.gen-drop[open] > summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.gen-drop > p { padding-top: 10px; }
+@media (min-width: 1025px) {
+  .gen-drop > summary { cursor: default; border-bottom: 0; padding: 0; }
+  .gen-drop > summary::after { display: none; }
+  .gen-drop > p { padding-top: 5px; }
+}
 
 /* ---------- contact + footer ---------- */
 .contact-rows { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
@@ -471,22 +496,22 @@ input:hover, select:hover { border-color: var(--muted); }
       <p class="section-kicker">Before you drive</p>
       <h2>General information</h2>
       <div class="general">
-        <div>
-          <h4>Who can drive</h4>
+        <details class="gen-drop" data-drop>
+          <summary><h4>Who can drive</h4></summary>
           <p>Drivers aged 21 and over with a current licence. Bring your licence and passport or ID to the hand-over. Tell us where your licence was issued when you book and we will confirm what you need to drive here.</p>
-        </div>
-        <div>
-          <h4>Fuel</h4>
+        </details>
+        <details class="gen-drop" data-drop>
+          <summary><h4>Fuel</h4></summary>
           <p>Return the tank as you got it. If you would rather pay for a full tank up front and bring the car back at any level, tell us when you book.</p>
-        </div>
-        <div>
-          <h4>Damage and compensation</h4>
+        </details>
+        <details class="gen-drop" data-drop>
+          <summary><h4>Damage and compensation</h4></summary>
           <p>We do not hold a bond. You and Tenana Rentals sign a hire contract at hand-over, and that contract sets out how any damage or loss is compensated. Read it before you sign and ask us about anything that is not clear.</p>
-        </div>
-        <div>
-          <h4>If something goes wrong</h4>
+        </details>
+        <details class="gen-drop" data-drop>
+          <summary><h4>If something goes wrong</h4></summary>
           <p>Call 73053005 or 73039089 at any hour. We come to you anywhere on South Tarawa, and swap the vehicle if we cannot fix it on the spot.</p>
-        </div>
+        </details>
       </div>
     </div>
   </section>
@@ -694,7 +719,7 @@ input:hover, select:hover { border-color: var(--muted); }
           shotFor(c) +
           '<div class="specs">' +
             '<h3>' + c.name + '</h3>' +
-            '<details class="spec-drop">' +
+            '<details class="spec-drop" data-drop>' +
               '<summary>Vehicle details</summary>' +
               '<ul class="spec-list">' +
                 c.specs.map(function (sp) { return '<li>' + iconFor(sp) + '<span>' + sp + '</span></li>'; }).join("") +
@@ -724,9 +749,9 @@ input:hover, select:hover { border-color: var(--muted); }
   }
 
   /* ---------- spec dropdowns ---------- */
-  function initSpecDrops() {
+  function initDropdowns() {
     var wide = window.matchMedia("(min-width: 1025px)");
-    var drops = document.querySelectorAll(".spec-drop");
+    var drops = document.querySelectorAll("[data-drop]");
     function sync() {
       Array.prototype.forEach.call(drops, function (d) { d.open = wide.matches; });
     }
@@ -895,7 +920,7 @@ input:hover, select:hover { border-color: var(--muted); }
     state.to = iso(later);
 
     renderFleet();
-    initSpecDrops();
+    initDropdowns();
     initGalleries();
     initReveal();
     renderLocations();
