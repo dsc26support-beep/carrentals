@@ -76,8 +76,7 @@ Vehicles live in the `FLEET` array near the top of the `<script>` block in
 ```js
 { id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, art: "sedan",
   photos: [ { src: "{{ASSET:assets/march-front.jpg}}", alt: "…" }, … ],
-  specs: [ "Automatic transmission", "5 passengers", … ],
-  blurb: "…" }
+  specs: [ "Automatic transmission", "5 passengers", … ] }
 ```
 
 - `photos` — any number. Two gives the gallery its arrows; an empty list shows a
@@ -99,6 +98,8 @@ when they rotate. The section-level ones nest — opening General information
 reveals four topics that each open in turn.
 - `art` — the placeholder silhouette: `sedan`, `micro`, `van`, `wagon`, `ute` or
   `scooter`.
+- Cars carry no description text. Below 1025px a rule separates one card from the
+  next; above it the two-column layout does that on its own.
 
 Drop new photos in `assets/`, add them to `photos`, and run `./build.sh`.
 Keep them around 1200px wide — they're embedded in the artifact build, so
