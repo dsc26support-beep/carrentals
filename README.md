@@ -70,10 +70,13 @@ Vehicles live in the `FLEET` array near the top of the `<script>` block in
   a colour, …), so the scooter-style rows work as well as the car ones. Below
   1025px the list collapses behind a "Vehicle details" summary.
 
-Both the car specs and the General information topics are `<details>` elements
-marked `data-drop`. `initDropdowns()` holds every one of them open from 1025px
-up and closed below, re-syncing only when the viewport crosses that width, so a
-panel a reader opened on a phone stays open when they rotate.
+Four things collapse on phones and tablets, all of them `<details>` elements
+marked `data-drop`: each car's specs, each General information topic, and the
+General information and Contact us sections as a whole. `initDropdowns()` holds
+every one of them open from 1025px up and closed below, re-syncing only when the
+viewport crosses that width, so a panel a reader opened on a phone stays open
+when they rotate. The section-level ones nest — opening General information
+reveals four topics that each open in turn.
 - `art` — the placeholder silhouette: `sedan`, `micro`, `van`, `wagon`, `ute` or
   `scooter`.
 
