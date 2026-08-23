@@ -122,10 +122,14 @@ discounts: the rate is the same for every day of every hire, however long.
 1. Days = return date − collection date (minimum one; the form flags a return
    date that isn't after the collection date).
 2. Vehicle charge = daily rate × days.
-3. Hand-over fees are added for collection and return — the Bikenibeu yard is
-   free, and anywhere we come to you (Bonriki Airport, or your hotel or house)
-   is $20. A free choice is labelled "(free)" in the dropdown rather than left
-   bare, so it reads as free rather than as unpriced.
+3. Hand-over fees are added for collection and return. There are two choices:
+   the Bikenibeu yard, free, and "We meet you" — the airport, a hotel or a
+   house, anywhere on South Tarawa — at $20. Each leg is charged separately, so
+   meeting you both ways is $40. A free choice is labelled "(free)" in the
+   dropdown rather than left bare, so it reads as free rather than as unpriced.
+   The quote and the emailed booking join the date and the point with a dash
+   ("Collection: 24 Aug 2026 — We meet you") because the label is a verb phrase,
+   not a place name.
 
 No discount is ever applied, and no bond is taken. Damage and loss are settled
 through the hire contract the customer and the company sign at hand-over, which
