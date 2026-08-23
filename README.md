@@ -48,24 +48,26 @@ Drop new photos in `assets/`, add them to `photos`, and run `./build.sh`.
 Keep them around 1200px wide — they're embedded in the artifact build, so
 oversized files bloat it.
 
-`LOCATIONS` and `DISCOUNTS` sit alongside `FLEET` and drive the hand-over fees
-and the long-hire discounts.
+`LOCATIONS` sits alongside `FLEET` and drives the hand-over fees. There are no
+discounts: the rate is the same for every day of every hire, however long.
 
 > **Some details still need confirming:** the transmission, fuel and capacity
 > rows are reasonable assumptions from the photos, not verified specifications.
-> The "General information" wording — driver age, bond handling and what a
-> visiting driver needs to drive here — should be checked against how the
-> business actually operates.
+> The "General information" wording — driver age and what a visiting driver
+> needs to drive here — should be checked against how the business actually
+> operates.
 
 ## How the price is worked out
 
 1. Days = return date − collection date (minimum one; the form flags a return
    date that isn't after the collection date).
 2. Vehicle charge = daily rate × days.
-3. The best matching long-hire discount comes off (3-day 5%, weekly 15%,
-   monthly 25%).
-4. Hand-over fees are added for collection and return — Bonriki Airport $15,
+3. Hand-over fees are added for collection and return — Bonriki Airport $15,
    your hotel or house $20, everything Betio to Bikenibeu free.
+
+No discount is ever applied, and no bond is taken. Damage and loss are settled
+through the hire contract the customer and the company sign at hand-over, which
+is stated both in the quote panel and under General information.
 
 "Email this booking" builds a `mailto:` with the full breakdown in the body, so
 an enquiry arrives already itemised. There's no server, so nothing is stored or
