@@ -30,7 +30,7 @@ Vehicles live in the `FLEET` array near the top of the `<script>` block in
 `src/page.html`:
 
 ```js
-{ id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, bond: 300, art: "sedan",
+{ id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, art: "sedan",
   photos: [ { src: "{{ASSET:assets/march-front.jpg}}", alt: "…" }, … ],
   specs: [ "Automatic transmission", "5 passengers", … ],
   blurb: "…" }
@@ -48,8 +48,8 @@ Drop new photos in `assets/`, add them to `photos`, and run `./build.sh`.
 Keep them around 1200px wide — they're embedded in the artifact build, so
 oversized files bloat it.
 
-`LOCATIONS`, `EXTRAS` and `DISCOUNTS` sit alongside `FLEET` and drive the
-hand-over fees, the add-ons and the long-hire discounts.
+`LOCATIONS` and `DISCOUNTS` sit alongside `FLEET` and drive the hand-over fees
+and the long-hire discounts.
 
 > **Some details still need confirming:** the transmission, fuel and capacity
 > rows are reasonable assumptions from the photos, not verified specifications.
@@ -66,8 +66,6 @@ hand-over fees, the add-ons and the long-hire discounts.
    monthly 25%).
 4. Hand-over fees are added for collection and return — Bonriki Airport $15,
    your hotel or house $20, everything Betio to Bikenibeu free.
-5. Extras are added, per-day ones multiplied by the number of days.
-6. The bond is shown separately — it's refundable, so it isn't in the total.
 
 "Email this booking" builds a `mailto:` with the full breakdown in the body, so
 an enquiry arrives already itemised. There's no server, so nothing is stored or
