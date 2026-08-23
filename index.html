@@ -173,6 +173,12 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
   font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
   padding: 5px 12px;
 }
+.note-tag {
+  position: absolute; left: 0; top: 0; z-index: 2;
+  background: rgba(35,35,35,.86); color: var(--white);
+  font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  padding: 5px 12px;
+}
 .g-nav { position: absolute; right: 10px; bottom: 10px; z-index: 2; display: flex; gap: 6px; align-items: center; }
 .g-nav button {
   width: 34px; height: 30px; border: 0; cursor: pointer;
@@ -544,17 +550,28 @@ input:hover, select:hover { border-color: var(--muted); }
       blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
 
     { id: "vitz-w1", name: "Toyota Vitz — white", plate: "KLTA 6221", rate: 60, art: "micro",
-      photos: [],
+      photos: [
+        { src: "assets/vitz-side.jpg",  alt: "Toyota Vitz, side view — photo of the model" },
+        { src: "assets/vitz-front.jpg", alt: "Toyota Vitz, front view — photo of the model" }
+      ],
+      photoNote: "Photo shows the model",
       specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
-      blurb: "A 2016 Vitz in white. Small, light on fuel and simple to drive — the car most of our customers end up in for a week of work or a family visit. We run two of these; if one is out, the other usually is not." },
+      blurb: "A 2016 Vitz in white. Small, light on fuel and simple to drive — the car most of our customers end up in for a week of work or a family visit. We run two of these; if one is out, the other usually is not. The photos show a Vitz of the same model and year — this one is white." },
 
     { id: "vitz-w2", name: "Toyota Vitz — white", plate: "KLTA 6234", rate: 60, art: "micro",
-      photos: [],
+      photos: [
+        { src: "assets/vitz-side.jpg",  alt: "Toyota Vitz, side view — photo of the model" },
+        { src: "assets/vitz-front.jpg", alt: "Toyota Vitz, front view — photo of the model" }
+      ],
+      photoNote: "Photo shows the model",
       specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
-      blurb: "The second white 2016 Vitz, the same as the one above in every way that matters. Book either and we will hand over whichever is free on your dates." },
+      blurb: "The second white 2016 Vitz, the same as the one above in every way that matters. Book either and we will hand over whichever is free on your dates. The photos show a Vitz of the same model and year — this one is white." },
 
     { id: "vitz-g", name: "Toyota Vitz — gray", plate: "KLTA 6247", rate: 60, art: "micro",
-      photos: [],
+      photos: [
+        { src: "assets/vitz-side.jpg",  alt: "Silver Toyota Vitz, side view" },
+        { src: "assets/vitz-front.jpg", alt: "Silver Toyota Vitz, front view" }
+      ],
       specs: ["2017 model", "Gray", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
       blurb: "The newest of the three Vitz, a 2017 in gray. Same size and same money as the white pair, a year younger." },
 
@@ -665,6 +682,7 @@ input:hover, select:hover { border-color: var(--muted); }
         }).join("") +
       '</div>' +
       (c.plate ? '<span class="plate">' + c.plate + '</span>' : '') +
+      (c.photoNote ? '<span class="note-tag">' + c.photoNote + '</span>' : '') +
       '<div class="g-nav">' +
         '<span class="g-count">1 / ' + c.photos.length + '</span>' +
         '<button type="button" data-step="-1" aria-label="Previous photo of the ' + c.name + '">&#8249;</button>' +
