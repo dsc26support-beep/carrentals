@@ -941,9 +941,8 @@ input:hover, select:hover { border-color: var(--muted); }
      we come to you is $20. `fee: 0` is shown as "(free)" rather than left bare,
      so the free choice reads as free instead of as an unpriced one. */
   var LOCATIONS = [
-    { id: "yard",    label: "Bikenibeu — our yard",               fee: 0 },
-    { id: "airport", label: "Bonriki Airport — we meet you",      fee: 20 },
-    { id: "other",   label: "Your hotel or house (South Tarawa)", fee: 20 }
+    { id: "yard", label: "Bikenibeu — our yard",                   fee: 0 },
+    { id: "meet", label: "We meet you — airport, hotel or house",  fee: 20 }
   ];
 
   var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard" };
@@ -1455,8 +1454,8 @@ input:hover, select:hover { border-color: var(--muted); }
 
     var from = locById(state.locFrom);
     var to = locById(state.locTo);
-    if (from && from.fee) { lines.push({ k: "Collection at " + shortLoc(from), v: money(from.fee) }); total += from.fee; }
-    if (to && to.fee) { lines.push({ k: "Return at " + shortLoc(to), v: money(to.fee) }); total += to.fee; }
+    if (from && from.fee) { lines.push({ k: "Collection — " + shortLoc(from), v: money(from.fee) }); total += from.fee; }
+    if (to && to.fee) { lines.push({ k: "Return — " + shortLoc(to), v: money(to.fee) }); total += to.fee; }
 
     return { lines: lines, total: total, n: n, car: car };
   }
@@ -1496,8 +1495,8 @@ input:hover, select:hover { border-color: var(--muted); }
     var lines = [
       "Mauri Tenana Rentals,", "", "I would like to book:", "",
       "Vehicle:     " + (q.car ? q.car.name : "not chosen yet"),
-      "Collection:  " + pretty(state.from) + " at " + shortLoc(locById(state.locFrom)),
-      "Return:      " + pretty(state.to) + " at " + shortLoc(locById(state.locTo)),
+      "Collection:  " + pretty(state.from) + " — " + shortLoc(locById(state.locFrom)),
+      "Return:      " + pretty(state.to) + " — " + shortLoc(locById(state.locTo)),
       "Days:        " + q.n
     ];
     lines.push("");
