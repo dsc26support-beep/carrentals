@@ -135,15 +135,41 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .category { padding-top: 34px; }
 
 /* ---------- vehicle rows ---------- */
-/* The cars used to be spaced apart by their descriptions. With those gone the
-   padding carries the rhythm, and below 1025px a rule makes the break explicit
-   where the two columns have stacked into one. */
-.vehicle { padding-block: 34px; }
-@media (max-width: 1024px) {
-  .vehicle + .vehicle { border-top: 1px solid var(--line); }
+/* The cars sit in a horizontal carousel: one card per view, snapped, swipeable
+   on a phone and driven by the arrows or dots elsewhere. Each card is a slide,
+   so nothing needs a rule between it and the next. */
+.carousel { margin-top: 6px; }
+.track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
 }
-.js .vehicle { opacity: 0; transform: translateY(16px); }
-.js .vehicle.in { opacity: 1; transform: none; transition: opacity .55s ease, transform .55s ease; }
+.track::-webkit-scrollbar { display: none; }
+.vehicle { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; padding-block: 26px 6px; }
+
+.car-nav { display: flex; align-items: center; justify-content: center; gap: 16px; padding-top: 16px; }
+.car-nav .arrow {
+  width: 38px; height: 34px; flex: none;
+  border: 1px solid var(--line); background: var(--white); color: var(--head);
+  font: inherit; font-size: 16px; line-height: 1; cursor: pointer;
+  display: grid; place-items: center;
+}
+.car-nav .arrow:hover:not(:disabled) { border-color: var(--pink); color: var(--pink); }
+.car-nav .arrow:disabled { opacity: .35; cursor: default; }
+.dots { display: flex; align-items: center; gap: 8px; }
+.dots button {
+  width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%;
+  background: #D3D3D3; cursor: pointer;
+  transition: width .2s ease, background-color .2s ease;
+}
+.dots button:hover { background: var(--muted); }
+.dots button[aria-current="true"] { width: 26px; border-radius: 999px; background: var(--pink); }
+.car-count { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .track { scroll-behavior: auto; } }
 .vehicle > h2 {
   font-size: 1.75rem; font-weight: 600; padding-bottom: 8px;
   border-bottom: 1px solid var(--line); margin-bottom: 18px;
@@ -512,7 +538,15 @@ input:hover, select:hover { border-color: var(--muted); }
 
 <main>
   <section class="wrap category" id="choose">
-    <div id="fleet-list"></div>
+    <div class="carousel">
+      <div class="track" id="fleet-list" role="group" aria-label="The cars, one at a time"></div>
+      <div class="car-nav">
+        <button type="button" class="arrow" id="car-prev" aria-label="Previous car">&#8249;</button>
+        <span class="dots" id="dots"></span>
+        <button type="button" class="arrow" id="car-next" aria-label="Next car">&#8250;</button>
+        <span class="car-count" id="car-count"></span>
+      </div>
+    </div>
   </section>
 
   <!-- ============ RESERVE ============ -->
@@ -1065,19 +1099,66 @@ input:hover, select:hover { border-color: var(--muted); }
     });
   }
 
-  /* ---------- reveal the rows as they come into view ---------- */
-  function initReveal() {
-    var rows = document.querySelectorAll(".vehicle");
-    if (still || !("IntersectionObserver" in window)) {
-      Array.prototype.forEach.call(rows, function (r) { r.classList.add("in"); });
-      return;
-    }
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add("in"); obs.unobserve(en.target); }
-      });
-    }, { rootMargin: "0px 0px -12% 0px" });
-    Array.prototype.forEach.call(rows, function (r) { obs.observe(r); });
+  /* ---------- the car carousel ----------
+     The track is a native scroll-snap row, so a phone just swipes it and the
+     browser does the work. The dots and arrows drive the same scroll, and the
+     active dot is read back off scrollLeft rather than tracked separately —
+     that way a swipe, an arrow and a dot all agree. */
+  var carAt = 0;
+
+  function carCards() { return $("fleet-list").querySelectorAll(".vehicle"); }
+
+  function carGo(i) {
+    var cards = carCards();
+    if (!cards.length) { return; }
+    i = Math.max(0, Math.min(cards.length - 1, i));
+    var track = $("fleet-list");
+    track.scrollTo({ left: cards[i].offsetLeft - track.offsetLeft, behavior: still ? "auto" : "smooth" });
+    carAt = i;
+    carPaint();
+  }
+
+  function carPaint() {
+    var cards = carCards();
+    if (!cards.length) { return; }
+    Array.prototype.forEach.call($("dots").children, function (d, i) {
+      d.setAttribute("aria-current", String(i === carAt));
+    });
+    $("car-prev").disabled = carAt === 0;
+    $("car-next").disabled = carAt === cards.length - 1;
+    $("car-count").textContent = (carAt + 1) + " of " + cards.length;
+  }
+
+  function initCarousel() {
+    var track = $("fleet-list");
+    var cards = carCards();
+    if (!track || !cards.length) { return; }
+
+    $("dots").innerHTML = FLEET.map(function (c, i) {
+      return '<button type="button" data-go="' + i + '" aria-current="' + (i === 0) +
+             '" aria-label="Show ' + c.name + (c.plate ? ", " + c.plate : "") + '"></button>';
+    }).join("");
+
+    $("dots").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-go]");
+      if (b) { carGo(Number(b.dataset.go)); }
+    });
+    $("car-prev").addEventListener("click", function () { carGo(carAt - 1); });
+    $("car-next").addEventListener("click", function () { carGo(carAt + 1); });
+
+    // a swipe moves the scroll directly, so read the position back when it settles
+    var idle;
+    track.addEventListener("scroll", function () {
+      clearTimeout(idle);
+      idle = setTimeout(function () {
+        var w = track.clientWidth || 1;
+        var i = Math.round(track.scrollLeft / w);
+        if (i !== carAt) { carAt = Math.max(0, Math.min(carCards().length - 1, i)); }
+        carPaint();
+      }, 90);
+    }, { passive: true });
+
+    carPaint();
   }
 
   function renderLocations() {
@@ -1198,7 +1279,7 @@ input:hover, select:hover { border-color: var(--muted); }
     initCal();
     initBookings();
     initGalleries();
-    initReveal();
+    initCarousel();
     renderLocations();
 
     var f = $("d-from");
