@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Tenana Rentals — car, van and scooter hire on South Tarawa, Kiribati. Live quote in AUD, delivery from Betio to Bonriki Airport.">
-<meta name="color-scheme" content="light dark">
+<meta name="description" content="Tenana Rentals — car rental on South Tarawa, Kiribati. Every car $60 a day, delivered from Betio to Bonriki Airport.">
+<meta name="color-scheme" content="light">
 <title>Tenana Rentals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,8 +95,74 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .category .note { color: var(--note); font-size: 13px; font-weight: 500; margin-top: 8px; max-width: 78ch; }
 .category .sub { color: var(--muted); font-size: 13px; font-style: italic; margin-top: 4px; }
 
+/* ---------- 4-second showcase ---------- */
+.showcase-wrap { padding-top: 26px; }
+.showcase {
+  position: relative; overflow: hidden;
+  aspect-ratio: 21 / 9; min-height: 240px;
+  background: #111; border: 1px solid var(--line);
+}
+@media (max-width: 700px) { .showcase { aspect-ratio: 4 / 3; } }
+.sc-slide { position: absolute; inset: 0; margin: 0; opacity: 0; }
+.sc-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sc-slide figcaption {
+  position: absolute; left: 0; bottom: 0;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  padding: 7px 14px;
+}
+.js .sc-slide {
+  animation: sc-fade 4s linear infinite both;
+  animation-delay: calc(var(--i) * 1s);
+}
+.js .sc-slide img {
+  animation: sc-zoom 4s linear infinite both;
+  animation-delay: calc(var(--i) * 1s);
+}
+@keyframes sc-fade {
+  0%   { opacity: 0; }
+  3%   { opacity: 1; }
+  24%  { opacity: 1; }
+  28%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes sc-zoom {
+  0%   { transform: scale(1.02) translateX(0); }
+  30%  { transform: scale(1.13) translateX(-1.2%); }
+  100% { transform: scale(1.13) translateX(-1.2%); }
+}
+.sc-mark {
+  position: absolute; right: 0; top: 0;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  padding: 14px 18px; text-align: right;
+  background: linear-gradient(200deg, rgba(0,0,0,.55), transparent 70%);
+}
+.sc-brand {
+  font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem); letter-spacing: .02em; text-transform: uppercase; color: #fff;
+}
+.sc-price {
+  font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700;
+  font-size: clamp(1.7rem, 4.4vw, 2.9rem); line-height: 1; color: var(--pink);
+  background: #fff; padding: 4px 12px 2px;
+}
+.sc-price em { font-style: normal; font-size: .42em; letter-spacing: .1em; text-transform: uppercase; color: var(--head); }
+.js .sc-mark { animation: sc-mark 4s ease-out infinite both; }
+@keyframes sc-mark {
+  0%   { opacity: 0; transform: translateY(-8px); }
+  10%  { opacity: 1; transform: none; }
+  92%  { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+.sc-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.25); }
+.sc-bar i { display: block; height: 100%; width: 100%; background: var(--pink); transform-origin: left; transform: scaleX(0); }
+.js .sc-bar i { animation: sc-bar 4s linear infinite both; }
+@keyframes sc-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
 /* ---------- vehicle rows ---------- */
 .vehicle { padding-top: 34px; }
+.js .vehicle { opacity: 0; transform: translateY(16px); }
+.js .vehicle.in { opacity: 1; transform: none; transition: opacity .55s ease, transform .55s ease; }
 .vehicle > h2 {
   font-size: 1.75rem; font-weight: 600; padding-bottom: 8px;
   border-bottom: 1px solid var(--line); margin-bottom: 18px;
@@ -104,16 +170,47 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .vehicle-grid { display: grid; grid-template-columns: 1fr 300px; gap: 22px; align-items: stretch; }
 @media (max-width: 800px) { .vehicle-grid { grid-template-columns: 1fr; } }
 
+/* photo gallery */
 .shot {
-  position: relative; background: var(--panel); border: 1px solid var(--line-soft);
-  display: grid; place-items: center; padding: 26px 24px; min-height: 236px;
+  position: relative; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line-soft);
+  min-height: 260px;
 }
-.shot svg { width: 100%; max-width: 540px; height: auto; color: var(--head); }
-.shot .plate {
-  position: absolute; left: 0; bottom: 0;
+.frame { position: absolute; inset: 0; }
+.frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0;
+  transition: opacity .5s ease, transform 6s ease;
+}
+.frame img.on { opacity: 1; }
+.shot:hover .frame img.on { transform: scale(1.04); }
+.plate {
+  position: absolute; left: 0; bottom: 0; z-index: 2;
   background: var(--pink); color: var(--white);
-  font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
   padding: 5px 12px;
+}
+.g-nav { position: absolute; right: 10px; bottom: 10px; z-index: 2; display: flex; gap: 6px; align-items: center; }
+.g-nav button {
+  width: 34px; height: 30px; border: 0; cursor: pointer;
+  background: rgba(255,255,255,.9); color: var(--head);
+  font: inherit; font-size: 16px; line-height: 1;
+  display: grid; place-items: center;
+  transition: background-color .15s ease, color .15s ease;
+}
+.g-nav button:hover { background: var(--pink); color: var(--white); }
+.g-count {
+  background: rgba(255,255,255,.9); color: var(--muted);
+  font-size: 11.5px; font-weight: 600; padding: 7px 9px; font-variant-numeric: tabular-nums;
+}
+/* placeholder panel for a car with no photos yet */
+.shot.empty { display: grid; place-items: center; padding: 26px 24px; }
+.shot.empty svg { width: 100%; max-width: 460px; height: auto; color: #C9C9C9; }
+.shot.empty svg circle { fill: #C9C9C9; }
+.shot.empty .soon {
+  position: absolute; left: 0; bottom: 0;
+  background: var(--head); color: var(--white);
+  font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px;
 }
 
 .specs { border: 1px solid var(--line); background: var(--white); }
@@ -216,6 +313,8 @@ input:hover, select:hover { border-color: var(--muted); }
   font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-size: 2rem;
   color: var(--head); font-variant-numeric: tabular-nums;
 }
+.summary-total .v.bump { animation: bump .5s ease; }
+@keyframes bump { 0% { color: var(--pink); transform: scale(1.06); } 100% { color: var(--head); transform: none; } }
 .summary-bond { font-size: 12.5px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
 .summary-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .summary-actions a {
@@ -268,6 +367,8 @@ input:hover, select:hover { border-color: var(--muted); }
 }
 </style>
 
+<script>document.documentElement.classList.add("js");</script>
+
 <div class="utility">
   <div class="wrap">
     <a href="#contact">Contact us</a>
@@ -303,9 +404,23 @@ input:hover, select:hover { border-color: var(--muted); }
 
 <main>
   <section class="wrap category" id="pick">
-    <h1>Everyday hire</h1>
-    <p class="note">A refundable bond is held at hand-over and returned with the keys — $150 for a scooter, $300 for a car, $400 for a 4x4 or van. Rates below are per day in Australian dollars.</p>
-    <p class="sub">Six vehicles, all kept and serviced on-island. Choose one to price your hire.</p>
+    <h1>Every car, $60 a day</h1>
+    <p class="note">One price for the whole fleet — $60 per day in Australian dollars. A refundable $300 bond is held at hand-over and returned with the keys.</p>
+    <p class="sub">Three cars, kept and serviced on-island. Choose one to price your hire.</p>
+
+    <div class="showcase-wrap">
+      <div class="showcase" role="img" aria-label="Four-second showcase of the Tenana Rentals cars: a red Nissan March and a black Honda Fit">
+        <figure class="sc-slide" style="--i:0"><img src="assets/march-front.jpg" alt=""><figcaption>Nissan March &middot; KLTA 6113</figcaption></figure>
+        <figure class="sc-slide" style="--i:1"><img src="assets/march-rear.jpg" alt=""><figcaption>Nissan March &middot; KLTA 6113</figcaption></figure>
+        <figure class="sc-slide" style="--i:2"><img src="assets/fit-side.jpg" alt=""><figcaption>Honda Fit &middot; KLTA 6991</figcaption></figure>
+        <figure class="sc-slide" style="--i:3"><img src="assets/fit-front.jpg" alt=""><figcaption>Honda Fit &middot; KLTA 6991</figcaption></figure>
+        <div class="sc-mark">
+          <span class="sc-brand">Tenana Rentals</span>
+          <span class="sc-price">$60 <em>a day</em></span>
+        </div>
+        <div class="sc-bar"><i></i></div>
+      </div>
+    </div>
 
     <div id="fleet-list"></div>
   </section>
@@ -427,24 +542,26 @@ input:hover, select:hover { border-color: var(--muted); }
 
   /* ---------- data: edit rates and specs here ---------- */
   var FLEET = [
-    { id: "hilux", name: "Toyota Hilux 4x4", rate: 130, bond: 400, art: "ute",
-      specs: ["Manual transmission", "5 passengers", "4 doors", "Air-conditioning", "Gasoline, 80 L", "Open tray"],
-      blurb: "A twin-cab ute and the vehicle we hire most to work crews. The tray takes tools, drums and building material, and the ride height clears the rough patches on the stretch past Bonriki. Seats five with the back doors, and the tray takes a load no car will." },
-    { id: "prado", name: "Land Cruiser Prado", rate: 160, bond: 400, art: "wagon",
-      specs: ["Automatic transmission", "7 passengers", "5 doors", "Air-conditioning", "Gasoline, 87 L", "620 L"],
-      blurb: "A seven-seat wagon for families and visiting groups. The air-conditioning copes with a still afternoon, and with the third row folded there is room for eskies, mats and bags for a day at the ocean side." },
-    { id: "hiace", name: "Toyota HiAce", rate: 180, bond: 400, art: "van",
-      specs: ["Manual transmission", "12 passengers", "4 doors", "Air-conditioning", "Diesel, 70 L", "Rear load space"],
-      blurb: "A twelve-seat van for church groups, workshops and airport runs — one trip instead of three. The sliding door and low step make it easy for older passengers, and the rear space still takes luggage with every seat full." },
-    { id: "corolla", name: "Toyota Corolla", rate: 95, bond: 300, art: "sedan",
-      specs: ["Automatic transmission", "5 passengers", "4 doors", "Air-conditioning", "Gasoline, 50 L", "470 L"],
-      blurb: "Our most-booked car. A sedan is easy on fuel, easy to park in Bairiki and comfortable for the run from Betio to the airport. Suited to couples, small families and anyone here for a week of meetings." },
-    { id: "every", name: "Suzuki Every", rate: 85, bond: 300, art: "micro",
-      specs: ["Manual transmission", "6 passengers", "4 doors", "Air-conditioning", "Gasoline, 40 L", "Flat load floor"],
-      blurb: "A small van with a small thirst. Good for market runs, light loads and moving a few people at once when a car is not quite enough and a HiAce is more than you need." },
-    { id: "scooter", name: "Honda 125cc", rate: 35, bond: 150, art: "scooter",
-      specs: ["Automatic, twist and go", "2 riders", "Helmet included", "Open air", "Gasoline, 5 L", "Underseat storage"],
-      blurb: "One road, little traffic and the cheapest way to get about. A 125cc scooter takes a rider and a passenger, uses next to no fuel, and parks anywhere. Helmets come with it." }
+    { id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, bond: 300, art: "sedan",
+      photos: [
+        { src: "assets/march-front.jpg", alt: "Red Nissan March, front view" },
+        { src: "assets/march-rear.jpg",  alt: "Red Nissan March, rear view" }
+      ],
+      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Hatchback boot"],
+      blurb: "A small hatchback and the easiest car we have to drive and to park. Light on fuel, quick through Bairiki and Betio, and comfortable for the run out to Bonriki. Good for a couple, a small family, or anyone here for a week of meetings." },
+
+    { id: "fit", name: "Honda Fit", plate: "KLTA 6991", rate: 60, bond: 300, art: "micro",
+      photos: [
+        { src: "assets/fit-side.jpg",  alt: "Black Honda Fit, side view" },
+        { src: "assets/fit-front.jpg", alt: "Black Honda Fit, front view" }
+      ],
+      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"],
+      blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
+
+    { id: "third", name: "Third car", plate: "", rate: 60, bond: 300, art: "sedan",
+      photos: [],
+      specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"],
+      blurb: "Our third car, on the same $60 a day. Photos and full details are coming — call us and we will tell you what it is and whether it is free on your dates." }
   ];
 
   var LOCATIONS = [
@@ -490,7 +607,8 @@ input:hover, select:hover { border-color: var(--muted); }
     fuel:  '<path d="M3.6 15.6V3.6a1.2 1.2 0 0 1 1.2-1.2h4.8a1.2 1.2 0 0 1 1.2 1.2v12"/><path d="M2.4 15.6h9.6M11.4 7.2h1.8a1.2 1.2 0 0 1 1.2 1.2v3.6a1.2 1.2 0 0 0 1.2 1.2"/>',
     boot:  '<rect x="2.4" y="5.4" width="13.2" height="9.6" rx="1"/><path d="M6.6 5.4V3.6a1.2 1.2 0 0 1 1.2-1.2h2.4a1.2 1.2 0 0 1 1.2 1.2v1.8"/>',
     sun:   '<circle cx="9" cy="9" r="3.6"/><path d="M9 1.2v2.4M9 14.4v2.4M1.2 9h2.4M14.4 9h2.4M3.5 3.5l1.7 1.7M12.8 12.8l1.7 1.7M14.5 3.5l-1.7 1.7M5.2 12.8l-1.7 1.7"/>',
-    helmet:'<path d="M2.4 12.6a6.6 6.6 0 1 1 13.2 0z"/><path d="M2.4 12.6h13.2v1.8a1.2 1.2 0 0 1-1.2 1.2H3.6a1.2 1.2 0 0 1-1.2-1.2z"/>'
+    helmet:'<path d="M2.4 12.6a6.6 6.6 0 1 1 13.2 0z"/><path d="M2.4 12.6h13.2v1.8a1.2 1.2 0 0 1-1.2 1.2H3.6a1.2 1.2 0 0 1-1.2-1.2z"/>',
+    tag:   '<path d="M9.2 1.8H15a1.2 1.2 0 0 1 1.2 1.2v5.8a1.2 1.2 0 0 1-.35.85l-6.6 6.6a1.2 1.2 0 0 1-1.7 0l-5.8-5.8a1.2 1.2 0 0 1 0-1.7l6.6-6.6a1.2 1.2 0 0 1 .85-.35z"/><circle cx="12.4" cy="5.6" r="1.1"/>'
   };
   function iconFor(text) {
     var t = text.toLowerCase();
@@ -500,7 +618,8 @@ input:hover, select:hover { border-color: var(--muted); }
             : t.indexOf("air-conditioning") > -1 ? "snow"
             : t.indexOf("open air") > -1 ? "sun"
             : t.indexOf("helmet") > -1 ? "helmet"
-            : t.indexOf("gasoline") > -1 || t.indexOf("diesel") > -1 ? "fuel"
+            : t.indexOf("gasoline") > -1 || t.indexOf("diesel") > -1 || t.indexOf("petrol") > -1 ? "fuel"
+            : t.indexOf("$") > -1 ? "tag"
             : "boot";
     return '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" ' +
            'stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -541,16 +660,37 @@ input:hover, select:hover { border-color: var(--muted); }
   }
 
   /* ---------- render ---------- */
+  function shotFor(c) {
+    if (!c.photos.length) {
+      return '<div class="shot empty">' + art(c.art) +
+             '<span class="soon">Photos coming</span></div>';
+    }
+    return '<div class="shot" data-gallery>' +
+      '<div class="frame">' +
+        c.photos.map(function (ph, i) {
+          return '<img src="' + ph.src + '" alt="' + ph.alt + '"' + (i ? '' : ' class="on"') +
+                 ' loading="lazy" decoding="async">';
+        }).join("") +
+      '</div>' +
+      (c.plate ? '<span class="plate">' + c.plate + '</span>' : '') +
+      '<div class="g-nav">' +
+        '<span class="g-count">1 / ' + c.photos.length + '</span>' +
+        '<button type="button" data-step="-1" aria-label="Previous photo of the ' + c.name + '">&#8249;</button>' +
+        '<button type="button" data-step="1" aria-label="Next photo of the ' + c.name + '">&#8250;</button>' +
+      '</div>' +
+    '</div>';
+  }
+
   function renderFleet() {
     $("fleet-list").innerHTML = FLEET.map(function (c) {
       return '<article class="vehicle" id="v-' + c.id + '" data-chosen="false">' +
         '<h2>' + c.name + '</h2>' +
         '<div class="vehicle-grid">' +
-          '<div class="shot">' + art(c.art) + '<span class="plate">' + money(c.rate) + ' / day</span></div>' +
+          shotFor(c) +
           '<div class="specs">' +
             '<h3>' + c.name + '</h3>' +
             '<ul class="spec-list">' +
-              c.specs.map(function (s) { return '<li>' + iconFor(s) + '<span>' + s + '</span></li>'; }).join("") +
+              c.specs.map(function (sp) { return '<li>' + iconFor(sp) + '<span>' + sp + '</span></li>'; }).join("") +
             '</ul>' +
             '<div class="rate-row"><span class="amount">' + money(c.rate) + '</span><span class="per">Per day</span></div>' +
             '<button type="button" class="pick" data-car="' + c.id + '">Choose this vehicle</button>' +
@@ -573,6 +713,54 @@ input:hover, select:hover { border-color: var(--muted); }
       update();
       $("book").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  }
+
+  /* ---------- photo galleries ---------- */
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function initGalleries() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-gallery]"), function (g) {
+      var shots = g.querySelectorAll(".frame img");
+      var count = g.querySelector(".g-count");
+      var at = 0;
+      var timer = null;
+
+      function show(i) {
+        at = (i + shots.length) % shots.length;
+        Array.prototype.forEach.call(shots, function (im, j) { im.classList.toggle("on", j === at); });
+        count.textContent = (at + 1) + " / " + shots.length;
+      }
+      function play() { if (!still && !timer) { timer = setInterval(function () { show(at + 1); }, 5000); } }
+      function stop() { clearInterval(timer); timer = null; }
+
+      g.addEventListener("click", function (e) {
+        var b = e.target.closest("button[data-step]");
+        if (!b) { return; }
+        stop();
+        show(at + Number(b.dataset.step));
+        play();
+      });
+      g.addEventListener("mouseenter", stop);
+      g.addEventListener("mouseleave", play);
+      g.addEventListener("focusin", stop);
+      g.addEventListener("focusout", play);
+      play();
+    });
+  }
+
+  /* ---------- reveal the rows as they come into view ---------- */
+  function initReveal() {
+    var rows = document.querySelectorAll(".vehicle");
+    if (still || !("IntersectionObserver" in window)) {
+      Array.prototype.forEach.call(rows, function (r) { r.classList.add("in"); });
+      return;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); obs.unobserve(en.target); }
+      });
+    }, { rootMargin: "0px 0px -12% 0px" });
+    Array.prototype.forEach.call(rows, function (r) { obs.observe(r); });
   }
 
   function renderExtras() {
@@ -658,7 +846,13 @@ input:hover, select:hover { border-color: var(--muted); }
       return '<li' + (l.off ? ' class="off"' : "") + '><span>' + l.k + '</span><span>' + l.v + '</span></li>';
     }).join("");
 
-    $("sum-total").textContent = money(q.total);
+    var totalEl = $("sum-total");
+    if (totalEl.textContent !== money(q.total)) {
+      totalEl.textContent = money(q.total);
+      totalEl.classList.remove("bump");
+      void totalEl.offsetWidth;
+      totalEl.classList.add("bump");
+    }
     $("sum-bond").textContent = !q.car
       ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
@@ -712,6 +906,8 @@ input:hover, select:hover { border-color: var(--muted); }
     state.to = iso(later);
 
     renderFleet();
+    initGalleries();
+    initReveal();
     renderExtras();
     renderLocations();
 
@@ -754,5 +950,6 @@ input:hover, select:hover { border-color: var(--muted); }
   }
 })();
 </script>
+
 </body>
 </html>
