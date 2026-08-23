@@ -13,6 +13,7 @@ gallery, and a hire is priced live as you pick dates and hand-over points.
 | --- | --- |
 | `src/page.html` | The page — content, styles and script in one file, with photos written as `{{ASSET:path}}` tokens. **Edit this.** |
 | `assets/` | The car photos, resized to 1200px wide. |
+| `status.json` | Which cars are free. **This is the file to edit day to day** — see below. |
 | `build.sh` | Builds both outputs from `src/page.html`. |
 | `index.html` | Generated. Asset tokens become relative paths; this is what GitHub Pages serves. Don't edit by hand. |
 | `dist/artifact.html` | Generated and git-ignored. Asset tokens become base64 data URIs so the page is fully self-contained, for publishing as a Claude Artifact. |
@@ -23,6 +24,29 @@ gallery, and a hire is priced live as you pick dates and hand-over points.
 
 No dependencies and no server. The only external request is the Google Fonts
 stylesheet; if it's blocked the page falls back to system fonts.
+
+## Marking a car as out (no developer needed)
+
+Every car shows **Available** in green or its own out-of-service wording in red,
+read from `status.json` when the page loads. To change one:
+
+1. Open `status.json` on github.com — or in the GitHub mobile app — and tap the
+   pencil to edit.
+2. Change that car's word from `available` to `out`, or to your own wording:
+   `"fit": "out until 3 September"` shows exactly that on the card.
+3. Commit the change. The site updates for everyone within about a minute.
+
+Only the word `available` (in any casing) shows the green badge. `out` shows
+"Not available", and anything else is shown back word for word. The keys are the
+`id` of each car in `FLEET`, so a new car needs a line here as well.
+
+A car marked out can still be chosen and priced — the badge tells the customer,
+and you sort the dates out when you reply.
+
+The file is fetched with `cache: "no-store"` and a cache-busting timestamp, so a
+returning visitor sees the change rather than a stale copy. On the Artifact build
+there is no `status.json` to fetch, the request simply fails, and every car falls
+back to Available.
 
 ## Adding or changing a car
 
