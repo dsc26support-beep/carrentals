@@ -191,7 +191,7 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .shot.empty svg { width: 100%; max-width: 460px; height: auto; color: #C9C9C9; }
 .shot.empty svg circle { fill: #C9C9C9; }
 .shot.empty .soon {
-  position: absolute; left: 0; bottom: 0;
+  position: absolute; right: 0; bottom: 0;
   background: var(--head); color: var(--white);
   font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px;
 }
@@ -543,17 +543,17 @@ input:hover, select:hover { border-color: var(--muted); }
       specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"],
       blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
 
-    { id: "vitz-w1", name: "Toyota Vitz — white", plate: "", rate: 60, art: "micro",
+    { id: "vitz-w1", name: "Toyota Vitz — white", plate: "KLTA 6221", rate: 60, art: "micro",
       photos: [],
       specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
       blurb: "A 2016 Vitz in white. Small, light on fuel and simple to drive — the car most of our customers end up in for a week of work or a family visit. We run two of these; if one is out, the other usually is not." },
 
-    { id: "vitz-w2", name: "Toyota Vitz — white", plate: "", rate: 60, art: "micro",
+    { id: "vitz-w2", name: "Toyota Vitz — white", plate: "KLTA 6234", rate: 60, art: "micro",
       photos: [],
       specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
       blurb: "The second white 2016 Vitz, the same as the one above in every way that matters. Book either and we will hand over whichever is free on your dates." },
 
-    { id: "vitz-g", name: "Toyota Vitz — gray", plate: "", rate: 60, art: "micro",
+    { id: "vitz-g", name: "Toyota Vitz — gray", plate: "KLTA 6247", rate: 60, art: "micro",
       photos: [],
       specs: ["2017 model", "Gray", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
       blurb: "The newest of the three Vitz, a 2017 in gray. Same size and same money as the white pair, a year younger." },
@@ -654,6 +654,7 @@ input:hover, select:hover { border-color: var(--muted); }
   function shotFor(c) {
     if (!c.photos.length) {
       return '<div class="shot empty">' + art(c.art) +
+             (c.plate ? '<span class="plate">' + c.plate + '</span>' : '') +
              '<span class="soon">Photos coming</span></div>';
     }
     return '<div class="shot" data-gallery>' +
