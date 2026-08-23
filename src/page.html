@@ -386,7 +386,7 @@ input:hover, select:hover { border-color: var(--muted); }
 
     <h1>Every car, <em>$60 a day</em></h1>
     <p class="note">One price for the whole fleet — $60 per day in Australian dollars, the same rate whether you take a car for a day or a month.</p>
-    <p class="sub">Three cars, kept and serviced on-island. Choose one to price your hire.</p>
+    <p class="sub">Six cars, kept and serviced on-island. Choose one to price your hire.</p>
   </div>
 
   <div class="sc-bar" aria-hidden="true"><i></i></div>
@@ -534,10 +534,25 @@ input:hover, select:hover { border-color: var(--muted); }
       specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"],
       blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
 
-    { id: "third", name: "Third car", plate: "", rate: 60, art: "sedan",
+    { id: "vitz-w1", name: "Toyota Vitz — white", plate: "", rate: 60, art: "micro",
+      photos: [],
+      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
+      blurb: "A 2016 Vitz in white. Small, light on fuel and simple to drive — the car most of our customers end up in for a week of work or a family visit. We run two of these; if one is out, the other usually is not." },
+
+    { id: "vitz-w2", name: "Toyota Vitz — white", plate: "", rate: 60, art: "micro",
+      photos: [],
+      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
+      blurb: "The second white 2016 Vitz, the same as the one above in every way that matters. Book either and we will hand over whichever is free on your dates." },
+
+    { id: "vitz-g", name: "Toyota Vitz — gray", plate: "", rate: 60, art: "micro",
+      photos: [],
+      specs: ["2017 model", "Gray", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
+      blurb: "The newest of the three Vitz, a 2017 in gray. Same size and same money as the white pair, a year younger." },
+
+    { id: "sixth", name: "Sixth car", plate: "", rate: 60, art: "sedan",
       photos: [],
       specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"],
-      blurb: "Our third car, on the same $60 a day. Photos and full details are coming — call us and we will tell you what it is and whether it is free on your dates." }
+      blurb: "The last car in the fleet, on the same $60 a day. Photos and full details are coming — call us and we will tell you what it is and whether it is free on your dates." }
   ];
 
   var LOCATIONS = [
@@ -571,7 +586,9 @@ input:hover, select:hover { border-color: var(--muted); }
     boot:  '<rect x="2.4" y="5.4" width="13.2" height="9.6" rx="1"/><path d="M6.6 5.4V3.6a1.2 1.2 0 0 1 1.2-1.2h2.4a1.2 1.2 0 0 1 1.2 1.2v1.8"/>',
     sun:   '<circle cx="9" cy="9" r="3.6"/><path d="M9 1.2v2.4M9 14.4v2.4M1.2 9h2.4M14.4 9h2.4M3.5 3.5l1.7 1.7M12.8 12.8l1.7 1.7M14.5 3.5l-1.7 1.7M5.2 12.8l-1.7 1.7"/>',
     helmet:'<path d="M2.4 12.6a6.6 6.6 0 1 1 13.2 0z"/><path d="M2.4 12.6h13.2v1.8a1.2 1.2 0 0 1-1.2 1.2H3.6a1.2 1.2 0 0 1-1.2-1.2z"/>',
-    tag:   '<path d="M9.2 1.8H15a1.2 1.2 0 0 1 1.2 1.2v5.8a1.2 1.2 0 0 1-.35.85l-6.6 6.6a1.2 1.2 0 0 1-1.7 0l-5.8-5.8a1.2 1.2 0 0 1 0-1.7l6.6-6.6a1.2 1.2 0 0 1 .85-.35z"/><circle cx="12.4" cy="5.6" r="1.1"/>'
+    tag:   '<path d="M9.2 1.8H15a1.2 1.2 0 0 1 1.2 1.2v5.8a1.2 1.2 0 0 1-.35.85l-6.6 6.6a1.2 1.2 0 0 1-1.7 0l-5.8-5.8a1.2 1.2 0 0 1 0-1.7l6.6-6.6a1.2 1.2 0 0 1 .85-.35z"/><circle cx="12.4" cy="5.6" r="1.1"/>',
+    year:  '<rect x="2.4" y="3.9" width="13.2" height="11.7" rx="1.2"/><path d="M2.4 7.5h13.2M6 2.1v3.6M12 2.1v3.6"/>',
+    paint: '<path d="M9 1.9s5.3 5.2 5.3 8.4a5.3 5.3 0 0 1-10.6 0C3.7 7.1 9 1.9 9 1.9z"/>'
   };
   function iconFor(text) {
     var t = text.toLowerCase();
@@ -583,6 +600,8 @@ input:hover, select:hover { border-color: var(--muted); }
             : t.indexOf("helmet") > -1 ? "helmet"
             : t.indexOf("gasoline") > -1 || t.indexOf("diesel") > -1 || t.indexOf("petrol") > -1 ? "fuel"
             : t.indexOf("$") > -1 ? "tag"
+            : t.indexOf("model") > -1 ? "year"
+            : /^(white|gray|grey|black|silver|red|blue|green)$/.test(t) ? "paint"
             : "boot";
     return '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" ' +
            'stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
