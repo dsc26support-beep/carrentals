@@ -1,0 +1,12 @@
+{
+  "_help": "Managed from the back office at admin.html — open it on your phone, tap the dates a car is hired, and press Save. You can also edit here by hand. Each car lists the times it is out as {\"from\": \"YYYY-MM-DD\", \"to\": \"YYYY-MM-DD\"}, where \"to\" is the day the car comes back and is free again.",
+  "updated": "",
+  "cars": {
+    "march": [],
+    "fit": [],
+    "vitz-w1": [],
+    "vitz-w2": [],
+    "vitz-g": [],
+    "sixth": []
+  }
+}
