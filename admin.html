@@ -64,7 +64,7 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
 .car[aria-pressed="true"] { border-color: var(--pink); box-shadow: inset 0 0 0 1px var(--pink); }
 .car .nm { font-weight: 600; color: var(--head); }
 .car .pl { font-size: 12.5px; color: var(--muted); }
-.car .st { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; color: var(--ok); }
+.car .st { display: block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; color: var(--ok); }
 .car .st.out { color: var(--note); }
 
 .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
@@ -83,6 +83,7 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
 .grid button.past { color: #C4C4C4; }
 .grid button.today { border-color: var(--muted); }
 .grid button.booked { background: #FBE3E7; color: var(--note); font-weight: 600; }
+.grid button.hold { background: #FFF3DC; color: #8A5A08; font-weight: 600; box-shadow: inset 0 0 0 1px #E3B457; }
 .grid button.pick { background: var(--pink); color: #fff; }
 .key { max-width: 400px; display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 12.5px; color: var(--muted); }
 .key span { display: inline-flex; align-items: center; gap: 6px; }
@@ -107,6 +108,24 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
 .warn b { color: var(--note); }
 .foot { padding-block: 26px; text-align: center; font-size: 12.5px; color: var(--muted); }
 .dirty-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pink); display: none; }
+
+/* the request that arrived on the link */
+.req { border-left: 3px solid var(--pink); background: var(--pink-pale); padding: 14px; }
+.req dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0 0 12px; font-size: 14.5px; }
+.req dt { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding-top: 3px; }
+.req dd { margin: 0; color: var(--head); font-weight: 600; }
+.req dd a { color: var(--pink); }
+.req .clash { color: var(--note); font-weight: 600; font-size: 13.5px; margin-bottom: 10px; }
+.req .privacy { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+.tag-hold {
+  background: #FFF3DC; color: #8A5A08; border: 1px solid #E3B457;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: 1px 6px; margin-left: 6px;
+}
+.req-acts .btn { flex: 1 1 150px; }
+@media (max-width: 460px) { .req-acts .btn { flex: 1 1 100%; } }
+.bk .confirm { color: #0B6B3C; margin-left: 8px; }
+.bk .confirm:hover { border-color: #0B6B3C; }
 .dirty .dirty-dot { display: inline-block; }
 </style>
 </head>
@@ -144,6 +163,30 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
         This page is public, so never open it on a shared phone, and press
         <b>Forget key</b> when you use someone else's device.
       </p>
+    </div>
+  </section>
+
+  <!-- ============ a request that arrived on a link ============ -->
+  <section class="card" id="req-card" style="display:none;">
+    <h2>Booking request</h2>
+    <div class="card-body">
+      <div class="req">
+        <p class="clash" id="req-clash" style="display:none;"></p>
+        <dl id="req-facts"></dl>
+        <label class="lbl" for="req-note">Name to show on the website</label>
+        <input type="text" id="req-note" maxlength="60">
+        <p class="privacy">
+          This name appears on the public website. The phone number is never saved there —
+          keep it in the message it came from. Shorten the name or clear it if you would
+          rather show nothing.
+        </p>
+        <div class="row req-acts" style="margin-top:12px;">
+          <button class="btn" id="req-confirm" type="button">Confirm booking</button>
+          <button class="btn ghost" id="req-hold" type="button">Hold these days</button>
+          <button class="btn ghost" id="req-decline" type="button">Decline</button>
+        </div>
+        <div class="msg" id="req-msg"></div>
+      </div>
     </div>
   </section>
 
@@ -244,7 +287,17 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
   }
 
   function list(id) { return (data.cars && data.cars[id]) || []; }
-  function bookedOn(id, day) { return list(id).some(function (b) { return b.from <= day && day < b.to; }); }
+  // An entry with no `status` is a confirmed hire — that is what everything
+  // written before holds existed looks like.
+  function isHold(b) { return !!b && b.status === "hold"; }
+  function entryOn(id, day) {
+    return list(id).filter(function (b) { return b.from <= day && day < b.to; })[0] || null;
+  }
+  function esc(t) {
+    return String(t).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
   function overlaps(id, from, to, skip) {
     return list(id).some(function (b, i) { return i !== skip && from < b.to && b.from < to; });
   }
@@ -301,6 +354,7 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
         var parsed = JSON.parse(text);
         data = { _help: parsed._help || "", updated: parsed.updated || "", cars: parsed.cars || {} };
         CARS.forEach(function (c) { if (!Array.isArray(data.cars[c.id])) { data.cars[c.id] = []; } });
+        if (req && !req.bad) { paintReqClash(); }
         say("auth-msg", "ok", "Loaded. " + (data.updated ? "Last saved " + data.updated + "." : ""));
         markDirty(false);
         renderCars();
@@ -313,7 +367,9 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
 
   /* ---------- cars ---------- */
   function statusOf(id) {
-    var out = list(id).filter(function (b) { return b.from <= today() && today() < b.to; })[0];
+    var out = list(id).filter(function (b) {
+      return !isHold(b) && b.from <= today() && today() < b.to;
+    })[0];
     return out ? { free: false, label: "Out until " + shortNice(out.to) } : { free: true, label: "Available" };
   }
 
@@ -351,7 +407,8 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
       var cls = [];
       if (ds < today()) { cls.push("past"); }
       if (ds === today()) { cls.push("today"); }
-      if (carId && bookedOn(carId, ds)) { cls.push("booked"); }
+      var on = carId ? entryOn(carId, ds) : null;
+      if (on) { cls.push(isHold(on) ? "hold" : "booked"); }
       if (pickFrom && pickTo && ds >= pickFrom && ds < pickTo) { cls.push("pick"); }
       else if (pickFrom && !pickTo && ds === pickFrom) { cls.push("pick"); }
       html += '<button type="button" data-day="' + ds + '"' +
@@ -414,18 +471,147 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
       var past = b.to <= today();
       return "<li>" +
         '<span><span class="when">' + shortNice(b.from) + " to " + shortNice(b.to) + "</span>" +
-        (b.note ? ' <span class="note">' + b.note + "</span>" : "") +
+        (b.note ? ' <span class="note">' + esc(b.note) + "</span>" : "") +
+        (isHold(b) ? ' <span class="tag-hold">on hold</span>' : "") +
         (past ? ' <span class="note">(finished)</span>' : "") + "</span>" +
+        (isHold(b) ? '<button type="button" class="confirm" data-ok="' + i + '">Confirm</button>' : "") +
         '<button type="button" data-del="' + i + '">Remove</button>' +
       "</li>";
     }).join("");
   }
   $("bk").addEventListener("click", function (e) {
+    if (!carId) { return; }
+    var ok = e.target.closest("[data-ok]");
+    if (ok) {
+      delete data.cars[carId][Number(ok.dataset.ok)].status;
+      markDirty(true);
+      renderCars(); renderCal(); renderList();
+      return;
+    }
     var b = e.target.closest("[data-del]");
-    if (!b || !carId) { return; }
+    if (!b) { return; }
     data.cars[carId].splice(Number(b.dataset.del), 1);
     markDirty(true);
     renderCars(); renderCal(); renderList();
+  });
+
+  /* ---------- a request that arrived on a link ----------
+     The website has no server, so a customer's request travels inside the
+     message they send: the message carries a link here with the booking packed
+     into the URL hash. Nothing is written to the website until you press Hold
+     or Confirm and then Save — the confirmation is always yours. */
+  var LOCS = {
+    yard: "Bikenibeu — our yard",
+    meet: "We meet you — airport, hotel or house"
+  };
+  var req = null;
+
+  function unb64url(str) {
+    var t = str.replace(/-/g, "+").replace(/_/g, "/");
+    while (t.length % 4) { t += "="; }
+    return decodeURIComponent(escape(atob(t)));
+  }
+
+  function readRequest() {
+    var m = /[#&]r=([A-Za-z0-9\-_]+)/.exec(window.location.hash || "");
+    if (!m) { return null; }
+    var f;
+    try { f = unb64url(m[1]).split("|").map(decodeURIComponent); }
+    catch (e) { return { bad: true }; }
+    if (f[0] !== "1" || f.length < 8) { return { bad: true }; }
+    var r = { car: f[1], from: f[2], to: f[3], locFrom: f[4], locTo: f[5],
+              name: f[6], phone: f[7], total: f[8] || "" };
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(r.from) || !/^\d{4}-\d{2}-\d{2}$/.test(r.to) ||
+        !(r.from < r.to) || !CARS.some(function (c) { return c.id === r.car; })) {
+      return { bad: true };
+    }
+    return r;
+  }
+
+  function carName(id) {
+    var c = CARS.filter(function (x) { return x.id === id; })[0];
+    return c ? c.name + (c.plate ? " (" + c.plate + ")" : "") : id;
+  }
+
+  function showRequest() {
+    var r = readRequest();
+    // Clear the hash straight away, so a refresh cannot re-add the same request.
+    if (window.location.hash && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    if (!r) { return; }
+    $("req-card").style.display = "";
+    if (r.bad) {
+      $("req-facts").innerHTML = "";
+      say("req-msg", "bad", "That link is damaged, so the booking could not be read. Ask the customer for the dates, or add them by hand below.");
+      ["req-hold", "req-confirm"].forEach(function (id) { $(id).disabled = true; });
+      return;
+    }
+    req = r;
+    $("req-facts").innerHTML = [
+      ["Who", esc(r.name || "not given")],
+      ["Phone", r.phone ? '<a href="tel:' + esc(r.phone.replace(/[^\d+]/g, "")) + '">' + esc(r.phone) + "</a>" : "not given"],
+      ["Car", esc(carName(r.car))],
+      ["Dates", nice(r.from) + " to " + nice(r.to)],
+      ["Collection", esc(LOCS[r.locFrom] || r.locFrom)],
+      ["Return", esc(LOCS[r.locTo] || r.locTo)],
+      ["Quoted", r.total ? "$" + esc(r.total) : "—"]
+    ].map(function (row) { return "<dt>" + row[0] + "</dt><dd>" + row[1] + "</dd>"; }).join("");
+    $("req-note").value = r.name || "";
+    paintReqClash();
+  }
+
+  // A confirmed hire over the same days is a blocker. Another hold is not —
+  // two people can ask for the same car, and you decide between them.
+  function reqClashes() {
+    if (!req || req.bad) { return { firm: [], held: [] }; }
+    var hits = list(req.car).filter(function (b) { return req.from < b.to && b.from < req.to; });
+    return { firm: hits.filter(function (b) { return !isHold(b); }), held: hits.filter(isHold) };
+  }
+
+  function paintReqClash() {
+    var box = $("req-clash");
+    var c = reqClashes();
+    var span = function (b) { return shortNice(b.from) + " to " + shortNice(b.to); };
+    if (c.firm.length) {
+      box.style.display = "";
+      box.textContent = "This car is already hired " + c.firm.map(span).join(" and ") +
+        ". Tell the customer, or put them in another car.";
+    } else if (c.held.length) {
+      box.style.display = "";
+      box.textContent = "Someone else has already asked for " + c.held.map(span).join(" and ") +
+        ". You can still confirm this one — decide who gets it.";
+    } else {
+      box.style.display = "none";
+      box.textContent = "";
+    }
+    $("req-confirm").disabled = c.firm.length > 0;
+    $("req-hold").disabled = c.firm.length > 0;
+  }
+
+  function takeRequest(hold) {
+    if (!req || req.bad) { return; }
+    if (reqClashes().firm.length) { return; }
+    var entry = { from: req.from, to: req.to };
+    var note = $("req-note").value.trim();
+    if (note) { entry.note = note; }
+    if (hold) { entry.status = "hold"; }        // the phone number is never saved here
+    data.cars[req.car] = data.cars[req.car] || [];
+    data.cars[req.car].push(entry);
+    data.cars[req.car].sort(function (a, b) { return a.from < b.from ? -1 : 1; });
+    carId = req.car;
+    markDirty(true);
+    renderCars(); renderCal(); renderList();
+    say("req-msg", "ok", (hold ? "Held." : "Confirmed.") +
+      " Now press “Save to the website” at the bottom — nothing is public until you do.");
+    ["req-hold", "req-confirm"].forEach(function (id) { $(id).disabled = true; });
+  }
+
+  $("req-hold").addEventListener("click", function () { takeRequest(true); });
+  $("req-confirm").addEventListener("click", function () { takeRequest(false); });
+  $("req-decline").addEventListener("click", function () {
+    req = null;
+    $("req-card").style.display = "none";
   });
 
   /* ---------- save ---------- */
@@ -476,6 +662,7 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
     if (dirty) { e.preventDefault(); e.returnValue = ""; }
   });
 
+  showRequest();
   renderCars();
   renderCal();
 })();

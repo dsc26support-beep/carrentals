@@ -382,15 +382,21 @@ input:hover, select:hover { border-color: var(--muted); }
 .cal-grid button.past:hover { background: transparent; }
 .cal-grid button.today { box-shadow: inset 0 0 0 1px var(--muted); }
 .cal-grid button.booked { background: #FBE3E7; color: var(--note); text-decoration: line-through; }
+/* Asked for but not confirmed: amber, and not struck through — the day is
+   still gettable, unlike a confirmed hire. */
+.cal-grid button.hold { background: #FFF3DC; color: #8A5A08; box-shadow: inset 0 0 0 1px #E3B457; }
 .cal-grid button.sel { background: var(--pink); color: var(--white); }
 .cal-grid button.sel.booked { background: var(--note); color: var(--white); }
+.cal-grid button.sel.hold { background: var(--pink); color: var(--white); box-shadow: none; }
 .cal-key { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0 12px 12px; font-size: 12px; color: var(--muted); }
 .cal-key span { display: inline-flex; align-items: center; gap: 6px; }
 .cal-key i { width: 11px; height: 11px; display: inline-block; }
 .cal-key .k-book { background: #FBE3E7; box-shadow: inset 0 0 0 1px var(--note); }
+.cal-key .k-hold { background: #FFF3DC; box-shadow: inset 0 0 0 1px #E3B457; }
 .cal-key .k-sel { background: var(--pink); }
 .cal-hint { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted); }
 .cal-clash { padding: 0 12px 12px; font-size: 13px; font-weight: 600; color: var(--note); }
+.cal-clash.soft { color: #8A5A08; font-weight: 600; }
 
 .date-err { display: none; margin-top: 12px; color: var(--note); font-size: 13px; font-weight: 500; }
 .date-err.show { display: block; }
@@ -422,6 +428,10 @@ input:hover, select:hover { border-color: var(--muted); }
 .summary-actions .solid:hover { background: var(--pink-dark); border-color: var(--pink-dark); }
 .summary-actions .hollow { color: var(--pink); }
 .summary-actions .hollow:hover { background: var(--pink-pale); }
+.summary-actions a.off {
+  pointer-events: none; background: var(--panel); color: var(--muted); border-color: var(--line);
+}
+.send-note { margin-top: 8px; font-size: 12px; color: var(--muted); text-align: center; }
 
 /* ---------- plain list sections ---------- */
 .general { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 26px 40px; }
@@ -741,6 +751,16 @@ input:hover, select:hover { border-color: var(--muted); }
               <select id="l-to"></select>
             </div>
           </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="c-name">Your name</label>
+              <input type="text" id="c-name" maxlength="60" autocomplete="name" placeholder="So we know who to expect">
+            </div>
+            <div class="field">
+              <label for="c-phone">Best number to reach you</label>
+              <input type="tel" id="c-phone" maxlength="30" autocomplete="tel" placeholder="73012345">
+            </div>
+          </div>
           <p class="date-err" id="date-err" role="alert">The return date needs to be after the collection date.</p>
 
           <div class="cal-wrap" id="cal-wrap">
@@ -755,6 +775,7 @@ input:hover, select:hover { border-color: var(--muted); }
             <p class="cal-key">
               <span><i class="k-sel"></i> Your dates</span>
               <span><i class="k-book"></i> Already hired</span>
+              <span><i class="k-hold"></i> Asked for, not confirmed</span>
             </p>
             <p class="cal-hint" id="cal-hint"></p>
             <p class="cal-clash" id="cal-clash" role="alert" hidden></p>
@@ -772,9 +793,11 @@ input:hover, select:hover { border-color: var(--muted); }
             </div>
             <p class="summary-note" id="sum-note">Choose a vehicle and your dates to see the price.</p>
             <div class="summary-actions">
-              <a class="solid" id="btn-email" href="#">Email this booking</a>
+              <a class="solid" id="btn-send" href="#" target="_blank" rel="noopener noreferrer">Send booking request</a>
+              <a class="hollow" id="btn-email" href="#">Email this booking</a>
               <a class="hollow" href="tel:+68673053005">Call +686 73053005</a>
             </div>
+            <p class="send-note" id="send-note"></p>
           </div>
         </aside>
       </div>
@@ -945,7 +968,7 @@ input:hover, select:hover { border-color: var(--muted); }
     { id: "meet", label: "We meet you — airport, hotel or house",  fee: 20 }
   ];
 
-  var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard" };
+  var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard", name: "", phone: "" };
 
   var $ = function (id) { return document.getElementById(id); };
   var money = function (n) { return "$" + n.toLocaleString("en-AU", { maximumFractionDigits: 0 }); };
@@ -1104,16 +1127,22 @@ input:hover, select:hover { border-color: var(--muted); }
       .toLocaleDateString("en-AU", { day: "numeric", month: "short" });
   }
   function bookingsFor(id) { return BOOKINGS[id] || []; }
-  function bookedOn(id, day) {
-    return bookingsFor(id).some(function (b) { return b.from <= day && day < b.to; });
+  // Returns the entry covering that day, so callers can tell a confirmed hire
+  // from a hold. An entry with no `status` is confirmed — that is what every
+  // entry written before holds existed looks like.
+  function entryOn(id, day) {
+    return bookingsFor(id).filter(function (b) { return b.from <= day && day < b.to; })[0] || null;
   }
+  function isHold(b) { return !!b && b.status === "hold"; }
   function clashFor(id, from, to) {
     return bookingsFor(id).filter(function (b) { return from < b.to && b.from < to; });
   }
 
   function statusFor(id) {
     var today = iso(new Date());
-    var out = bookingsFor(id).filter(function (b) { return b.from <= today && today < b.to; })[0];
+    var out = bookingsFor(id).filter(function (b) {
+      return !isHold(b) && b.from <= today && today < b.to;
+    })[0];
     return out ? { free: false, label: "Out until " + prettyShort(out.to) }
                : { free: true, label: "Available" };
   }
@@ -1175,7 +1204,8 @@ input:hover, select:hover { border-color: var(--muted); }
       var cls = [];
       if (ds < today) { cls.push("past"); }
       if (ds === today) { cls.push("today"); }
-      if (state.car && bookedOn(state.car, ds)) { cls.push("booked"); }
+      var on = state.car ? entryOn(state.car, ds) : null;
+      if (on) { cls.push(isHold(on) ? "hold" : "booked"); }
       if (state.from && state.to && ds >= state.from && ds < state.to) { cls.push("sel"); }
       html += '<button type="button" data-day="' + ds + '"' +
               (cls.length ? ' class="' + cls.join(" ") + '"' : "") +
@@ -1186,27 +1216,49 @@ input:hover, select:hover { border-color: var(--muted); }
     if (!state.car) {
       hint.textContent = "Choose a car above and its hired days appear here.";
     } else {
-      var future = bookingsFor(state.car).filter(function (b) { return b.to > today; });
+      var ahead = bookingsFor(state.car).filter(function (b) { return b.to > today; });
+      var firm = ahead.filter(function (b) { return !isHold(b); });
+      var held = ahead.filter(isHold);
+      var said = [];
+      if (firm.length) { said.push("Already hired: " + firm.map(span).join(", ") + "."); }
+      if (held.length) { said.push("Asked for, not confirmed: " + held.map(span).join(", ") + "."); }
       hint.textContent = awaitingTo
         ? "Now tap the day you would bring it back."
-        : future.length
-          ? "Already hired: " + future.map(function (b) {
-              return prettyShort(b.from) + " to " + prettyShort(b.to);
-            }).join(", ") + "."
+        : said.length
+          ? said.join(" ")
           : "This car has nothing booked — every day is free.";
     }
     paintClash();
   }
 
+  function span(b) { return prettyShort(b.from) + " to " + prettyShort(b.to); }
+
   function paintClash() {
     var box = $("cal-clash");
     if (!box) { return; }
     var hit = state.car && state.from && state.to ? clashFor(state.car, state.from, state.to) : [];
-    if (!hit.length) { box.hidden = true; box.textContent = ""; return; }
-    box.hidden = false;
-    box.textContent = "That car is already hired " +
-      hit.map(function (b) { return prettyShort(b.from) + " to " + prettyShort(b.to); }).join(" and ") +
-      ". Pick other dates, or choose another car — several are the same $60 a day.";
+    var firm = hit.filter(function (b) { return !isHold(b); });
+    var held = hit.filter(isHold);
+
+    if (firm.length) {
+      box.hidden = false;
+      box.classList.remove("soft");
+      box.textContent = "That car is already hired " + firm.map(span).join(" and ") +
+        ". Pick other dates, or choose another car — several are the same $60 a day.";
+      return;
+    }
+    if (held.length) {
+      // Not a blocker. Someone asked first, nothing is settled, and the next
+      // person should still be able to ask.
+      box.hidden = false;
+      box.classList.add("soft");
+      box.textContent = "Someone has asked for " + held.map(span).join(" and ") +
+        " and we have not confirmed it yet. Send your request and we will tell you quickly.";
+      return;
+    }
+    box.hidden = true;
+    box.classList.remove("soft");
+    box.textContent = "";
   }
 
   function initCal() {
@@ -1483,31 +1535,95 @@ input:hover, select:hover { border-color: var(--muted); }
       ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
         ? "Set a collection and return date. Minimum hire is one day."
-        : clashFor(state.car, state.from, state.to).length
+        : clashFor(state.car, state.from, state.to).filter(function (b) { return !isHold(b); }).length
           ? "This car is already hired for part of those dates — see the calendar."
           : "No bond. Any damage is settled through the hire contract you sign at hand-over.";
 
-    $("btn-email").href = mailto(q);
+    var gap = missing(q);
+    var ready = !gap;
+    ["btn-send", "btn-email"].forEach(function (id) {
+      var a = $(id);
+      a.classList.toggle("off", !ready);
+      a.setAttribute("aria-disabled", ready ? "false" : "true");
+    });
+    $("btn-send").href = ready ? whatsapp(q) : "#";
+    $("btn-email").href = ready ? mailto(q) : "#";
+    $("send-note").textContent = gap;
+
     paintClash();
   }
 
-  function mailto(q) {
+  /* ---------- the booking request ----------
+     There is no server behind this site, so a request cannot be posted
+     anywhere. Instead it travels inside the message the customer already
+     sends: the message carries a link back to the back office with the whole
+     booking packed into the URL hash. The owner taps it and the back office
+     opens with the request loaded, ready to hold or confirm.
+
+     The hash is deliberate. A hash is never sent to the server, so the
+     customer's name and number never appear in anyone's request log. */
+  var SITE = "https://dsc26support-beep.github.io/carrentals/";
+
+  function b64url(str) {
+    return btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function requestLink(q) {
+    var fields = [state.car, state.from, state.to, state.locFrom, state.locTo,
+                  state.name, state.phone, String(q.total)];
+    // Each field is percent-encoded before joining, so a "|", a newline or an
+    // accent in someone's name cannot break the format apart.
+    var packed = "1|" + fields.map(function (v) {
+      return encodeURIComponent(v == null ? "" : v);
+    }).join("|");
+    return SITE + "admin.html#r=" + b64url(packed);
+  }
+
+  // One message, used by both the WhatsApp button and the email.
+  function requestText(q) {
     var lines = [
       "Mauri Tenana Rentals,", "", "I would like to book:", "",
       "Vehicle:     " + (q.car ? q.car.name : "not chosen yet"),
       "Collection:  " + pretty(state.from) + " — " + shortLoc(locById(state.locFrom)),
       "Return:      " + pretty(state.to) + " — " + shortLoc(locById(state.locTo)),
-      "Days:        " + q.n
+      "Days:        " + q.n,
+      "Name:        " + (state.name || "—"),
+      "Phone:       " + (state.phone || "—")
     ];
     lines.push("");
     q.lines.forEach(function (l) { lines.push("  " + l.k + " — " + l.v); });
     lines.push("", "Quoted total: " + money(q.total) + " AUD");
-    lines.push("", "My name: ", "Best number to reach me: ", "Licence issued in: ");
+    lines.push("", "Licence issued in: ");
+    lines.push("", "Reference (for Tenana Rentals):", requestLink(q));
+    return lines.join("\n");
+  }
 
+  function subject(q) {
+    return "Booking — " + (q.car ? q.car.name : "vehicle to confirm") +
+      (q.n ? " — " + pretty(state.from) + " to " + pretty(state.to) : "");
+  }
+
+  function mailto(q) {
     return "mailto:ruuka4climatechange@gmail.com" +
-      "?subject=" + encodeURIComponent("Booking — " + (q.car ? q.car.name : "vehicle to confirm") +
-        (q.n ? " — " + pretty(state.from) + " to " + pretty(state.to) : "")) +
-      "&body=" + encodeURIComponent(lines.join("\n"));
+      "?subject=" + encodeURIComponent(subject(q)) +
+      "&body=" + encodeURIComponent(requestText(q));
+  }
+
+  function whatsapp(q) {
+    return "https://wa.me/68673039089?text=" + encodeURIComponent(requestText(q));
+  }
+
+  // What is still missing before a request can be sent, in plain words.
+  function missing(q) {
+    var need = [];
+    if (!q.car) { need.push("a vehicle"); }
+    if (q.n === 0) { need.push("your dates"); }
+    if (!state.name) { need.push("your name"); }
+    if (!state.phone) { need.push("a number to reach you"); }
+    if (!need.length) { return ""; }
+    var last = need.pop();
+    return "Add " + (need.length ? need.join(", ") + " and " + last : last) + " to send your request.";
   }
 
   /* ---------- tab highlighting ---------- */
@@ -1569,6 +1685,8 @@ input:hover, select:hover { border-color: var(--muted); }
       renderCal();
       maybePop();
     });
+    $("c-name").addEventListener("input", function (e) { state.name = e.target.value.trim(); update(); });
+    $("c-phone").addEventListener("input", function (e) { state.phone = e.target.value.trim(); update(); });
     $("l-from").addEventListener("change", function (e) { state.locFrom = e.target.value; update(); });
     $("l-to").addEventListener("change", function (e) { state.locTo = e.target.value; update(); });
     $("booker").addEventListener("submit", function (e) {

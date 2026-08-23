@@ -1,5 +1,5 @@
 {
-  "_help": "Managed from the back office at admin.html — open it on your phone, tap the dates a car is hired, and press Save. You can also edit here by hand. Each car lists the times it is out as {\"from\": \"YYYY-MM-DD\", \"to\": \"YYYY-MM-DD\"}, where \"to\" is the day the car comes back and is free again.",
+  "_help": "Managed from the back office at admin.html — open it on your phone, tap the dates a car is hired, and press Save. A booking request from the website arrives as a link that opens this page with the booking already filled in. You can also edit here by hand. Each car lists the times it is out as {\"from\": \"YYYY-MM-DD\", \"to\": \"YYYY-MM-DD\"}, where \"to\" is the day the car comes back and is free again. An entry may also carry \"status\": \"hold\", meaning someone has asked for those days but you have not confirmed it — the website shows those days in amber and still lets other people ask. No status means a confirmed hire. Never put a phone number in here: this file is public.",
   "updated": "2026-08-23 20:27 UTC",
   "cars": {
     "march": [
