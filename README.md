@@ -98,8 +98,11 @@ when they rotate. The section-level ones nest — opening General information
 reveals four topics that each open in turn.
 - `art` — the placeholder silhouette: `sedan`, `micro`, `van`, `wagon`, `ute` or
   `scooter`.
-- Cars carry no description text. Below 1025px a rule separates one card from the
-  next; above it the two-column layout does that on its own.
+- Cars carry no description text.
+- The cars sit in a horizontal carousel, one per view: a native scroll-snap track
+  that a phone swipes, with arrows, dots and an "n of 6" counter under it. The
+  active dot is read back off `scrollLeft` when scrolling settles, so a swipe, an
+  arrow and a dot can never disagree about which car is showing.
 
 Drop new photos in `assets/`, add them to `photos`, and run `./build.sh`.
 Keep them around 1200px wide — they're embedded in the artifact build, so
