@@ -336,17 +336,18 @@ input:hover, select:hover { border-color: var(--muted); }
 .foot { border-top: 1px solid var(--line); margin-top: 44px; }
 .foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; padding-block: 20px; font-size: 12.5px; color: var(--muted); }
 
-/* ---------- floating call button ---------- */
+/* ---------- floating Messenger button ---------- */
 .fab {
   position: fixed; right: 22px; bottom: 22px; z-index: 60;
   display: inline-flex; align-items: center; gap: 10px;
   padding: 13px 20px 13px 16px; border-radius: 999px;
-  background: var(--pink); color: var(--white);
+  color: var(--white);
+  background: linear-gradient(135deg, #00B2FF 0%, #006AFF 34%, #A033FF 62%, #FF5280 84%, #FF7061 100%);
   font-weight: 600; font-size: 14.5px; text-decoration: none;
-  box-shadow: 0 6px 18px -6px rgba(229,0,125,.6), 0 2px 6px rgba(0,0,0,.18);
-  transition: transform .15s ease, background-color .15s ease;
+  box-shadow: 0 6px 18px -6px rgba(0,106,255,.55), 0 2px 6px rgba(0,0,0,.2);
+  transition: transform .15s ease, filter .15s ease;
 }
-.fab:hover { background: var(--pink-dark); transform: translateY(-2px); }
+.fab:hover { filter: brightness(1.07); transform: translateY(-2px); }
 .fab svg { flex: none; }
 .fab .num { display: block; font-size: 12.5px; font-weight: 500; opacity: .9; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) {
@@ -520,11 +521,14 @@ input:hover, select:hover { border-color: var(--muted); }
   </div>
 </footer>
 
-<a class="fab" href="tel:+68673053005" aria-label="Call Tenana Rentals on +686 73053005">
-  <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M7.6 10.8a13.5 13.5 0 0 0 5.6 5.6l1.9-1.9a1.1 1.1 0 0 1 1.1-.26c1.15.38 2.38.58 3.65.58a1.1 1.1 0 0 1 1.1 1.1v3a1.1 1.1 0 0 1-1.1 1.1A17.1 17.1 0 0 1 2.7 3a1.1 1.1 0 0 1 1.1-1.1h3A1.1 1.1 0 0 1 7.9 3c0 1.27.2 2.5.58 3.65a1.1 1.1 0 0 1-.27 1.12z" fill="currentColor"></path>
+<a class="fab" href="https://www.facebook.com/share/1GNQMcx1cg/"
+   target="_blank" rel="noopener noreferrer"
+   aria-label="Message Tenana Rentals on Facebook (opens in a new tab)">
+  <svg width="24" height="24" viewBox="0 0 36 36" aria-hidden="true">
+    <path d="M18 0C8.06 0 0 7.47 0 17.32c0 5.61 2.62 10.62 6.71 13.88V36l6.13-3.37c1.63.45 3.37.69 5.16.69 9.94 0 18-7.47 18-17.32S27.94 0 18 0zm1.79 23.32l-4.58-4.89-8.95 4.89 9.84-10.45 4.69 4.89 8.84-4.89-9.84 10.45z"
+          fill="currentColor"></path>
   </svg>
-  <span class="label">Call us<span class="num">73053005</span></span>
+  <span class="label">Message us<span class="num">on Facebook</span></span>
 </a>
 
 <script>
