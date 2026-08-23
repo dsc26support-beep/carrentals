@@ -281,7 +281,6 @@ input:hover, select:hover { border-color: var(--muted); }
 .summary-lines { list-style: none; margin: 0; padding: 0; font-size: 13.5px; font-variant-numeric: tabular-nums; }
 .summary-lines li { display: flex; justify-content: space-between; gap: 14px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
 .summary-lines li span:first-child { color: var(--muted); }
-.summary-lines li.off span:last-child { color: var(--pink); }
 .summary-total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-top: 14px; }
 .summary-total .k { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--head); }
 .summary-total .v {
@@ -380,7 +379,7 @@ input:hover, select:hover { border-color: var(--muted); }
 <main>
   <section class="wrap category" id="choose">
     <h1>Every car, $60 a day</h1>
-    <p class="note">One price for the whole fleet — $60 per day in Australian dollars.</p>
+    <p class="note">One price for the whole fleet — $60 per day in Australian dollars, the same rate whether you take a car for a day or a month.</p>
     <p class="sub">Three cars, kept and serviced on-island. Choose one to price your hire.</p>
 
     <div class="showcase-wrap">
@@ -468,8 +467,8 @@ input:hover, select:hover { border-color: var(--muted); }
           <p>Return the tank as you got it. If you would rather pay for a full tank up front and bring the car back at any level, tell us when you book.</p>
         </div>
         <div>
-          <h4>Bond</h4>
-          <p>A refundable bond is held at hand-over and returned when the vehicle comes back in the same condition. Salt, sand and coral dust are our problem, not yours.</p>
+          <h4>Damage and compensation</h4>
+          <p>We do not hold a bond. You and Tenana Rentals sign a hire contract at hand-over, and that contract sets out how any damage or loss is compensated. Read it before you sign and ask us about anything that is not clear.</p>
         </div>
         <div>
           <h4>If something goes wrong</h4>
@@ -542,12 +541,6 @@ input:hover, select:hover { border-color: var(--muted); }
     { id: "ambo",    label: "Ambo / Ambo Lagoon",                fee: 0 },
     { id: "airport", label: "Bonriki Airport — we meet you",     fee: 15 },
     { id: "other",   label: "Your hotel or house (South Tarawa)", fee: 20 }
-  ];
-
-  var DISCOUNTS = [
-    { days: 21, rate: 0.25, label: "Monthly rate (21+ days)" },
-    { days: 7,  rate: 0.15, label: "Weekly rate (7+ days)" },
-    { days: 3,  rate: 0.05, label: "3-day rate" }
   ];
 
   var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard" };
@@ -758,12 +751,6 @@ input:hover, select:hover { border-color: var(--muted); }
       lines.push({ k: car.name + " × " + n + (n === 1 ? " day" : " days"), v: money(hire) });
       total += hire;
 
-      var disc = DISCOUNTS.filter(function (d) { return n >= d.days; })[0];
-      if (disc) {
-        var off = Math.round(hire * disc.rate);
-        lines.push({ k: disc.label, v: "−" + money(off), off: true });
-        total -= off;
-      }
     }
 
     var from = locById(state.locFrom);
@@ -783,7 +770,7 @@ input:hover, select:hover { border-color: var(--muted); }
       : "No vehicle chosen yet — pick one above.";
 
     $("sum-lines").innerHTML = q.lines.map(function (l) {
-      return '<li' + (l.off ? ' class="off"' : "") + '><span>' + l.k + '</span><span>' + l.v + '</span></li>';
+      return '<li><span>' + l.k + '</span><span>' + l.v + '</span></li>';
     }).join("");
 
     var totalEl = $("sum-total");
@@ -797,7 +784,7 @@ input:hover, select:hover { border-color: var(--muted); }
       ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
         ? "Set a collection and return date. Minimum hire is one day."
-        : "Collection and return between Betio and Bikenibeu are free.";
+        : "No bond. Any damage is settled through the hire contract you sign at hand-over.";
 
     $("btn-email").href = mailto(q);
   }
