@@ -40,7 +40,9 @@ Vehicles live in the `FLEET` array near the top of the `<script>` block in
   grey silhouette and a "Photos coming" tag instead.
 - `specs` — free text. Each row's icon is chosen from its own wording
   (transmission, passengers, doors, air-conditioning, petrol, `$`, …), so the
-  scooter-style rows work as well as the car ones.
+  scooter-style rows work as well as the car ones. Below 1025px the list
+  collapses behind a "Vehicle details" summary; from 1025px up the summary is
+  hidden and `initSpecDrops()` holds every panel open.
 - `art` — the placeholder silhouette: `sedan`, `micro`, `van`, `wagon`, `ute` or
   `scooter`.
 
