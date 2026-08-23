@@ -287,6 +287,11 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .band { margin-top: 54px; padding-block: 40px; border-top: 1px solid var(--line); background: var(--white); }
 .band.grey { background: var(--panel); }
 .band + .band { margin-top: 0; }
+/* The two closing sections are a pair of collapsed rows, so the usual 40px of
+   band padding left a wide empty strip between them. Trim the facing edges and
+   they read as one list. */
+#general { padding-bottom: 14px; }
+#contact { padding-top: 14px; }
 .band h2 {
   font-size: 1.5rem; font-weight: 600; color: var(--head);
   padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
@@ -923,12 +928,12 @@ input:hover, select:hover { border-color: var(--muted); }
       specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"] }
   ];
 
+  /* Collection and return. The yard is the default and costs nothing; anywhere
+     we come to you is $20. `fee: 0` is shown as "(free)" rather than left bare,
+     so the free choice reads as free instead of as an unpriced one. */
   var LOCATIONS = [
-    { id: "yard",    label: "Bikenibeu — our yard",              fee: 0 },
-    { id: "betio",   label: "Betio",                             fee: 0 },
-    { id: "bairiki", label: "Bairiki",                           fee: 0 },
-    { id: "ambo",    label: "Ambo / Ambo Lagoon",                fee: 0 },
-    { id: "airport", label: "Bonriki Airport — we meet you",     fee: 15 },
+    { id: "yard",    label: "Bikenibeu — our yard",               fee: 0 },
+    { id: "airport", label: "Bonriki Airport — we meet you",      fee: 20 },
     { id: "other",   label: "Your hotel or house (South Tarawa)", fee: 20 }
   ];
 
@@ -1408,7 +1413,7 @@ input:hover, select:hover { border-color: var(--muted); }
 
   function renderLocations() {
     var opts = LOCATIONS.map(function (l) {
-      return '<option value="' + l.id + '">' + l.label + (l.fee ? " (+" + money(l.fee) + ")" : "") + "</option>";
+      return '<option value="' + l.id + '">' + l.label + (l.fee ? " (+" + money(l.fee) + ")" : " (free)") + "</option>";
     }).join("");
     $("l-from").innerHTML = opts;
     $("l-to").innerHTML = opts;
