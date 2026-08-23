@@ -456,6 +456,41 @@ input:hover, select:hover { border-color: var(--muted); }
 .foot { border-top: 1px solid var(--line); margin-top: 44px; }
 .foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; padding-block: 20px; font-size: 12.5px; color: var(--muted); }
 
+/* ---------- "not confirmed yet" popup ---------- */
+.pop {
+  border: 0; padding: 0; max-width: 430px; width: calc(100% - 32px);
+  background: var(--white); box-shadow: 0 24px 60px -20px rgba(0,0,0,.5);
+}
+.pop::backdrop { background: rgba(12,12,12,.66); }
+.pop-body { position: relative; padding: 30px 24px 24px; text-align: center; }
+.pop h2 {
+  font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700;
+  font-size: clamp(1.6rem, 7vw, 2.1rem); color: var(--note); line-height: 1.12;
+}
+.pop p { margin-top: 12px; font-size: 15px; color: var(--ink); }
+.pop-close {
+  position: absolute; top: 6px; right: 8px;
+  width: 34px; height: 34px; border: 0; background: transparent;
+  font: inherit; font-size: 22px; line-height: 1; color: var(--muted); cursor: pointer;
+}
+.pop-close:hover { color: var(--head); }
+.pop-ways { display: flex; gap: 10px; margin-top: 22px; }
+.pop-ways a {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 6px; border: 1px solid var(--line); text-decoration: none;
+  color: var(--head); font-size: 12.5px; font-weight: 600;
+}
+.pop-ways a:hover { border-color: var(--pink); }
+.pop-ways .call { color: var(--pink); }
+.pop-ways .wa { color: #25D366; }
+.pop-ways .fb { color: #006AFF; }
+.pop-ways span { color: var(--head); }
+@media (prefers-reduced-motion: no-preference) {
+  .pop[open] { animation: pop-in .22s ease-out; }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+}
+
 /* ---------- floating Messenger button ---------- */
 .fab {
   position: fixed; right: 22px; bottom: 22px; z-index: 60;
@@ -687,6 +722,35 @@ input:hover, select:hover { border-color: var(--muted); }
     <span>Rates in Australian dollars</span>
   </div>
 </footer>
+
+<dialog class="pop" id="pop" aria-labelledby="pop-h">
+  <div class="pop-body">
+    <button type="button" class="pop-close" id="pop-close" aria-label="Close">&times;</button>
+    <h2 id="pop-h">E tuai matoa am Booking</h2>
+    <p>Reitaki NGKAI ibukin kamatoana&hellip;</p>
+    <div class="pop-ways">
+      <a href="tel:+68673053005" aria-label="Call +686 73053005">
+        <svg class="call" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7.6 10.8a13.5 13.5 0 0 0 5.6 5.6l1.9-1.9a1.1 1.1 0 0 1 1.1-.26c1.15.38 2.38.58 3.65.58a1.1 1.1 0 0 1 1.1 1.1v3a1.1 1.1 0 0 1-1.1 1.1A17.1 17.1 0 0 1 2.7 3a1.1 1.1 0 0 1 1.1-1.1h3A1.1 1.1 0 0 1 7.9 3c0 1.27.2 2.5.58 3.65a1.1 1.1 0 0 1-.27 1.12z" fill="currentColor"></path>
+        </svg>
+        <span>Call</span>
+      </a>
+      <a href="https://wa.me/68673039089" target="_blank" rel="noopener noreferrer" aria-label="Message us on WhatsApp (opens in a new tab)">
+        <svg class="wa" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 1.77.46 3.43 1.27 4.87L2 22l5.25-1.38A9.95 9.95 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18.2a8.16 8.16 0 0 1-4.34-1.25l-.31-.19-3.12.82.83-3.04-.2-.32A8.16 8.16 0 0 1 3.8 12c0-4.52 3.68-8.2 8.2-8.2s8.2 3.68 8.2 8.2-3.68 8.2-8.2 8.2z" fill="currentColor"></path>
+          <path d="M17.6 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.88 1.21 3.08c.15.2 2.09 3.2 5.07 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z" fill="currentColor"></path>
+        </svg>
+        <span>WhatsApp</span>
+      </a>
+      <a href="https://www.facebook.com/share/1GNQMcx1cg/" target="_blank" rel="noopener noreferrer" aria-label="Message us on Facebook (opens in a new tab)">
+        <svg class="fb" width="26" height="26" viewBox="0 0 36 36" aria-hidden="true">
+          <path d="M18 0C8.06 0 0 7.47 0 17.32c0 5.61 2.62 10.62 6.71 13.88V36l6.13-3.37c1.63.45 3.37.69 5.16.69 9.94 0 18-7.47 18-17.32S27.94 0 18 0zm1.79 23.32l-4.58-4.89-8.95 4.89 9.84-10.45 4.69 4.89 8.84-4.89-9.84 10.45z" fill="currentColor"></path>
+        </svg>
+        <span>Messenger</span>
+      </a>
+    </div>
+  </div>
+</dialog>
 
 <a class="fab" href="https://www.facebook.com/share/1GNQMcx1cg/"
    target="_blank" rel="noopener noreferrer"
@@ -1029,9 +1093,11 @@ input:hover, select:hover { border-color: var(--muted); }
       // Tap a collection day, then a return day. The first tap also sets a
       // one-day return so the form is never holding an invalid range, and
       // awaitingTo is what lets the second tap extend it rather than start over.
+      var completed = false;
       if (awaitingTo && day > state.from) {
         state.to = day;
         awaitingTo = false;
+        completed = true;
       } else {
         state.from = day;
         state.to = addDays(day, 1);
@@ -1042,6 +1108,7 @@ input:hover, select:hover { border-color: var(--muted); }
       $("d-to").min = state.from;
       renderCal();
       update();
+      if (completed) { maybePop(); }
     });
     $("cal-prev").addEventListener("click", function () {
       calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1);
@@ -1051,6 +1118,7 @@ input:hover, select:hover { border-color: var(--muted); }
       calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1);
       renderCal();
     });
+    renderCal();   // draw it now; the bookings fetch only ever repaints it
   }
 
   /* ---------- spec dropdowns ---------- */
@@ -1097,6 +1165,34 @@ input:hover, select:hover { border-color: var(--muted); }
       g.addEventListener("focusout", play);
       play();
     });
+  }
+
+  /* ---------- "not confirmed yet" popup ----------
+     Raised once a visitor has settled on a pair of dates, and only from an
+     action they took: both fields already hold a default range on load, so
+     firing on state alone would ambush someone who had not touched anything.
+     Once per visit, so adjusting the dates again does not nag. */
+  var popDone = false;
+
+  function maybePop() {
+    if (popDone || days() === 0) { return; }
+    var d = $("pop");
+    if (!d) { return; }
+    popDone = true;
+    if (typeof d.showModal === "function") { d.showModal(); }
+    else { d.setAttribute("open", ""); }
+  }
+
+  function initPop() {
+    var d = $("pop");
+    if (!d) { return; }
+    function shut() {
+      if (typeof d.close === "function" && d.open) { d.close(); }
+      else { d.removeAttribute("open"); }
+    }
+    $("pop-close").addEventListener("click", shut);
+    // a tap on the dark surround closes it; taps inside the card do not
+    d.addEventListener("click", function (e) { if (e.target === d) { shut(); } });
   }
 
   /* ---------- the car carousel ----------
@@ -1280,6 +1376,7 @@ input:hover, select:hover { border-color: var(--muted); }
     initBookings();
     initGalleries();
     initCarousel();
+    initPop();
     renderLocations();
 
     var f = $("d-from");
@@ -1303,7 +1400,13 @@ input:hover, select:hover { border-color: var(--muted); }
       update();
       renderCal();
     });
-    t.addEventListener("change", function () { state.to = t.value; awaitingTo = false; update(); renderCal(); });
+    t.addEventListener("change", function () {
+      state.to = t.value;
+      awaitingTo = false;
+      update();
+      renderCal();
+      maybePop();
+    });
     $("l-from").addEventListener("change", function (e) { state.locFrom = e.target.value; update(); });
     $("l-to").addEventListener("change", function (e) { state.locTo = e.target.value; update(); });
     $("booker").addEventListener("submit", function (e) {
