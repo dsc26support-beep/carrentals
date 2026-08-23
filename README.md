@@ -1,9 +1,9 @@
 # Tenana Rentals
 
 Single-page site for **Tenana Rentals** — car rental on South Tarawa, Kiribati.
-Three cars, one price: $60 a day. The page opens with a four-second photo
-showcase, lists each car with its own photo gallery and specs, and prices a
-hire live as you pick dates, hand-over points and extras.
+Six cars, one price: $60 a day. The photo showcase runs behind the page header,
+each car is listed with its specs and, where we have them, its own photo
+gallery, and a hire is priced live as you pick dates and hand-over points.
 
 **Contact:** 73053005 · 73039089 · ruuka4climatechange@gmail.com
 
@@ -37,7 +37,10 @@ Vehicles live in the `FLEET` array near the top of the `<script>` block in
 ```
 
 - `photos` — any number. Two gives the gallery its arrows; an empty list shows a
-  grey silhouette and a "Photos coming" tag instead.
+  grey silhouette and a "Photos coming" tag instead. Four of the six cars are in
+  that state today.
+- `plate` — shown as a tag over the photo. An empty string omits the tag, which
+  is how the cars whose KLTA numbers we don't have yet are listed.
 - `specs` — free text. Each row's icon is chosen from its own wording
   (transmission, passengers, doors, air-conditioning, petrol, `$`, …), so the
   scooter-style rows work as well as the car ones. Below 1025px the list
