@@ -12,6 +12,7 @@
   --pink-dark: #B00062;
   --pink-pale: #FCEBF4;
   --note:      #C8102E;
+  --ok:        #0F8A4D;
   --head:      #232323;
   --ink:       #4A4A4A;
   --muted:     #7C7C7C;
@@ -194,10 +195,15 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 }
 
 .specs { border: 1px solid var(--line); background: var(--white); }
-.specs h3 {
-  color: var(--pink); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+/* Availability, read from status.json at load — see initStatus(). */
+.status {
+  display: flex; align-items: center; gap: 9px;
   padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
+  font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ok);
 }
+.status .dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: none; }
+.status.out { color: var(--note); }
 /* On phones and tablets the specs sit behind a tap; from 1025px up the
    summary is hidden and initSpecDrops() holds every panel open. */
 .spec-drop > summary {
@@ -718,7 +724,9 @@ input:hover, select:hover { border-color: var(--muted); }
         '<div class="vehicle-grid">' +
           shotFor(c) +
           '<div class="specs">' +
-            '<h3>' + c.name + '</h3>' +
+            '<div class="status" data-status-for="' + c.id + '">' +
+              '<span class="dot"></span><span class="txt">Available</span>' +
+            '</div>' +
             '<details class="spec-drop" data-drop>' +
               '<summary>Vehicle details</summary>' +
               '<ul class="spec-list">' +
@@ -746,6 +754,36 @@ input:hover, select:hover { border-color: var(--muted); }
       update();
       $("book").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  }
+
+  /* ---------- availability ----------
+     status.json sits beside index.html and is what the owner edits. Anything
+     other than "available" is shown as the wording they typed, so "out until
+     3 September" reads back verbatim. On the Artifact build the file is not
+     there and the fetch simply fails, leaving every car as Available. */
+  function paintStatus(id, value) {
+    var box = document.querySelector('[data-status-for="' + id + '"]');
+    if (!box) { return; }
+    var raw = String(value == null ? "available" : value).trim();
+    var free = raw.toLowerCase() === "available";
+    var label = free ? "Available"
+              : raw.toLowerCase() === "out" || raw === "" ? "Not available"
+              : raw;
+    box.classList.toggle("out", !free);
+    box.querySelector(".txt").textContent = label;
+  }
+
+  function initStatus() {
+    if (!window.fetch) { return; }
+    fetch("status.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) { return; }
+        FLEET.forEach(function (c) {
+          if (Object.prototype.hasOwnProperty.call(data, c.id)) { paintStatus(c.id, data[c.id]); }
+        });
+      })
+      .catch(function () { /* no file, no network: every car stays Available */ });
   }
 
   /* ---------- spec dropdowns ---------- */
@@ -921,6 +959,7 @@ input:hover, select:hover { border-color: var(--muted); }
 
     renderFleet();
     initDropdowns();
+    initStatus();
     initGalleries();
     initReveal();
     renderLocations();
