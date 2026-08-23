@@ -133,6 +133,16 @@ is stated both in the quote panel and under General information.
 an enquiry arrives already itemised. There's no server, so nothing is stored or
 sent automatically.
 
+## The "not confirmed yet" popup
+
+Once a visitor settles on a pair of dates, a dialog says **E tuai matoa am
+Booking** — Reitaki NGKAI ibukin kamatoana… — over shortcuts to Call, WhatsApp
+and Messenger. It is raised only from an action the visitor took, never from
+page state (both date fields hold a default range on load), and only once per
+visit so adjusting dates afterwards does not nag. It is a native `<dialog>`, so
+Escape and focus handling come from the browser; a tap on the dark surround
+closes it too.
+
 ## The four-second showcase
 
 The block above the listing is a CSS animation, not a video file: four slides of
