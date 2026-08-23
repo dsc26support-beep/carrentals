@@ -143,6 +143,33 @@ visit so adjusting dates afterwards does not nag. It is a native `<dialog>`, so
 Escape and focus handling come from the browser; a tap on the dark surround
 closes it too.
 
+### Three finishes
+
+The popup ships in three looks and a device rotates through them across visits
+— **1 → 2 → 3 → 1**, remembering the last one it showed in `localStorage`
+(`tenana.pop`). Where storage is walled off (private browsing, cookies blocked)
+it picks one at random instead.
+
+| # | Finish | What makes it |
+|---|--------|---------------|
+| 1 | Frosted glass | `backdrop-filter` blur behind a card held at ~90% white — glassy, but the heading stays readable in direct sun — with a magenta glow under the bottom corners and circular glass discs behind the logos. |
+| 2 | Raised card | Solid white, a magenta crown across the top, three stacked shadows at increasing blur for real elevation, and badges that float above tiles that float above the card. Tiles press down 2px. |
+| 3 | Tilted card | Opens on a `perspective` rotation and keeps a shallow tilt at rest; the heading and shortcuts sit on a nearer Z plane (`translateZ`) so they are genuinely in front of the surface. A sheen sweeps across once as it lands. |
+
+**To look at one on demand**, add `?pop=1`, `?pop=2` or `?pop=3` to the address:
+
+    https://dsc26support-beep.github.io/carrentals/?pop=2
+
+That pins the finish and opens the popup straight away, without touching the
+rotation. Customers never arrive with it on the URL.
+
+Each finish is one CSS block (`.pop-1` / `.pop-2` / `.pop-3`); everything they
+share sits in the `.pop` block above them. To retire one, drop its block and set
+`POP_STYLES` in the script to the number left. Note that `.pop-3` must not get
+`overflow: hidden` — that would flatten `preserve-3d` and kill the depth — and
+the open animations fill `backwards`, never `forwards`, or the finished
+animation would outrank the `:active` press styles.
+
 ## The four-second showcase
 
 The block above the listing is a CSS animation, not a video file: four slides of
