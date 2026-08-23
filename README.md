@@ -1,67 +1,93 @@
 # Tenana Rentals
 
-Single-page site for **Tenana Rentals** — car, van and scooter hire on South Tarawa,
-Kiribati. The centrepiece is a live booking calculator: pick dates, a vehicle, a
-hand-over point and any extras, and the quote updates as you go, in AUD.
+Single-page site for **Tenana Rentals** — car rental on South Tarawa, Kiribati.
+Three cars, one price: $60 a day. The page opens with a four-second photo
+showcase, lists each car with its own photo gallery and specs, and prices a
+hire live as you pick dates, hand-over points and extras.
 
 **Contact:** 73053005 · 73039089 · ruuka4climatechange@gmail.com
 
 ## What's here
 
-| File | Purpose |
+| Path | Purpose |
 | --- | --- |
-| `src/page.html` | The page itself — content, styles and script in one file, with no `<html>`/`<head>`/`<body>` wrapper. Edit this. |
-| `build.sh` | Wraps `src/page.html` into a standalone `index.html`. |
-| `index.html` | Generated. Open it in a browser or upload it anywhere static. Don't edit by hand. |
+| `src/page.html` | The page — content, styles and script in one file, with photos written as `{{ASSET:path}}` tokens. **Edit this.** |
+| `assets/` | The car photos, resized to 1200px wide. |
+| `build.sh` | Builds both outputs from `src/page.html`. |
+| `index.html` | Generated. Asset tokens become relative paths; this is what GitHub Pages serves. Don't edit by hand. |
+| `dist/artifact.html` | Generated and git-ignored. Asset tokens become base64 data URIs so the page is fully self-contained, for publishing as a Claude Artifact. |
 
 ```sh
-./build.sh          # rebuild index.html after editing src/page.html
+./build.sh          # rebuild both outputs after editing src/page.html
 ```
 
-No dependencies, no build tools, no server. The only external request is the
-Google Fonts stylesheet; if it's blocked the page falls back to system fonts.
+No dependencies and no server. The only external request is the Google Fonts
+stylesheet; if it's blocked the page falls back to system fonts.
 
-## Changing the rates
+## Adding or changing a car
 
-Everything the calculator prices lives in three arrays near the top of the
-`<script>` block in `src/page.html`:
+Vehicles live in the `FLEET` array near the top of the `<script>` block in
+`src/page.html`:
 
-- `FLEET` — vehicles, daily rate, seats, bond, and which silhouette to draw
-  (`ute`, `wagon`, `van`, `micro`, `sedan`, `scooter`).
-- `LOCATIONS` — hand-over points and their fee (`0` means free delivery).
-- `EXTRAS` — add-ons, priced either `per: "day"` or `per: "hire"`.
-- `DISCOUNTS` — long-hire discounts, checked longest-first against the number of days.
+```js
+{ id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, bond: 300, art: "sedan",
+  photos: [ { src: "{{ASSET:assets/march-front.jpg}}", alt: "…" }, … ],
+  specs: [ "Automatic transmission", "5 passengers", … ],
+  blurb: "…" }
+```
 
-Change a number there and both the fleet cards and the quote follow. Run
-`./build.sh` afterwards.
+- `photos` — any number. Two gives the gallery its arrows; an empty list shows a
+  grey silhouette and a "Photos coming" tag instead.
+- `specs` — free text. Each row's icon is chosen from its own wording
+  (transmission, passengers, doors, air-conditioning, petrol, `$`, …), so the
+  scooter-style rows work as well as the car ones.
+- `art` — the placeholder silhouette: `sedan`, `micro`, `van`, `wagon`, `ute` or
+  `scooter`.
 
-> **The rates, bonds and fees in this repo are placeholders.** Replace them with
-> Tenana's real prices before the site goes live. The same goes for the wording in
-> the "The plain rules" section — driver age, bond handling and licence
-> requirements should be checked against how the business actually operates and
-> what Kiribati requires of visiting drivers.
+Drop new photos in `assets/`, add them to `photos`, and run `./build.sh`.
+Keep them around 1200px wide — they're embedded in the artifact build, so
+oversized files bloat it.
 
-## How the quote is worked out
+`LOCATIONS`, `EXTRAS` and `DISCOUNTS` sit alongside `FLEET` and drive the
+hand-over fees, the add-ons and the long-hire discounts.
 
-1. Days = return date − pick-up date (minimum one; the form flags a return date
-   that isn't after the pick-up).
+> **Some details still need confirming:** the transmission, fuel and capacity
+> rows are reasonable assumptions from the photos, not verified specifications.
+> The "General information" wording — driver age, bond handling and what a
+> visiting driver needs to drive here — should be checked against how the
+> business actually operates.
+
+## How the price is worked out
+
+1. Days = return date − collection date (minimum one; the form flags a return
+   date that isn't after the collection date).
 2. Vehicle charge = daily rate × days.
-3. The best matching long-hire discount comes off the vehicle charge.
-4. Hand-over fees are added for pick-up and drop-off (airport $15, hotel/house $20).
+3. The best matching long-hire discount comes off (3-day 5%, weekly 15%,
+   monthly 25%).
+4. Hand-over fees are added for collection and return — Bonriki Airport $15,
+   your hotel or house $20, everything Betio to Bikenibeu free.
 5. Extras are added, per-day ones multiplied by the number of days.
 6. The bond is shown separately — it's refundable, so it isn't in the total.
 
-"Email this quote to us" builds a `mailto:` with the full breakdown in the body,
-so an enquiry arrives already itemised. There's no server, so nothing is stored
-or sent automatically.
+"Email this booking" builds a `mailto:` with the full breakdown in the body, so
+an enquiry arrives already itemised. There's no server, so nothing is stored or
+sent automatically.
+
+## The four-second showcase
+
+The block above the listing is a CSS animation, not a video file: four slides of
+one second each, crossfading, with a slow zoom on every photo and a progress bar
+across the bottom. It loops, needs no plugin or codec, and plays on any phone.
+Under `prefers-reduced-motion` it holds still on the first photo.
+
+To change it, edit the `.sc-slide` figures in the markup and the `sc-fade` /
+`sc-zoom` / `sc-bar` keyframes. All three run on the same 4s cycle, with each
+slide offset by `--i` seconds — keep them in step if you change the length.
 
 ## Design notes
 
-Palette and marks come from the Kiribati flag and the lagoon — deep ocean teal,
-frigatebird gold, flag red — with neutrals biased towards teal rather than plain
-grey. Bricolage Grotesque sets the headings, Instrument Sans the body, IBM Plex
-Mono the prices and dates. The hand-over points run west to east along the one
-road, because on South Tarawa that ordering is real information.
-
-The page follows the reader's theme: light, dark, or whatever the system is set
-to. Every colour is a token defined in all three states.
+White catalogue layout with a magenta accent, following the reference the owner
+supplied: utility strip, brand bar, sticky uppercase tab nav, and each car as an
+image-left / spec-panel-right row. Barlow sets the text, Barlow Semi Condensed
+the headings. Single-theme by intent, with every colour painted explicitly so
+the page holds on any background.
