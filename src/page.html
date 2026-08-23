@@ -135,7 +135,13 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .category { padding-top: 34px; }
 
 /* ---------- vehicle rows ---------- */
-.vehicle { padding-top: 34px; }
+/* The cars used to be spaced apart by their descriptions. With those gone the
+   padding carries the rhythm, and below 1025px a rule makes the break explicit
+   where the two columns have stacked into one. */
+.vehicle { padding-block: 34px; }
+@media (max-width: 1024px) {
+  .vehicle + .vehicle { border-top: 1px solid var(--line); }
+}
 .js .vehicle { opacity: 0; transform: translateY(16px); }
 .js .vehicle.in { opacity: 1; transform: none; transition: opacity .55s ease, transform .55s ease; }
 .vehicle > h2 {
@@ -250,7 +256,6 @@ section[id], .vehicle[id] { scroll-margin-top: 58px; }
 .pick:hover { background: var(--pink-pale); }
 .vehicle[data-chosen="true"] .specs { border-color: var(--pink); }
 .vehicle[data-chosen="true"] .pick { background: var(--pink); color: var(--white); }
-.blurb { color: var(--muted); font-size: 13.5px; margin-top: 14px; max-width: 92ch; }
 
 /* ---------- reserve block ---------- */
 .band { margin-top: 54px; padding-block: 40px; border-top: 1px solid var(--line); background: var(--white); }
@@ -670,16 +675,14 @@ input:hover, select:hover { border-color: var(--muted); }
         { src: "{{ASSET:assets/march-front.jpg}}", alt: "Red Nissan March, front view" },
         { src: "{{ASSET:assets/march-rear.jpg}}",  alt: "Red Nissan March, rear view" }
       ],
-      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Hatchback boot"],
-      blurb: "A small hatchback and the easiest car we have to drive and to park. Light on fuel, quick through Bairiki and Betio, and comfortable for the run out to Bonriki. Good for a couple, a small family, or anyone here for a week of meetings." },
+      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Hatchback boot"] },
 
     { id: "fit", name: "Honda Fit", plate: "KLTA 6991", rate: 60, art: "micro",
       photos: [
         { src: "{{ASSET:assets/fit-side.jpg}}",  alt: "Black Honda Fit, side view" },
         { src: "{{ASSET:assets/fit-front.jpg}}", alt: "Black Honda Fit, front view" }
       ],
-      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"],
-      blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
+      specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"] },
 
     { id: "vitz-w1", name: "Toyota Vitz — white", plate: "KLTA 6221", rate: 60, art: "micro",
       photos: [
@@ -687,8 +690,7 @@ input:hover, select:hover { border-color: var(--muted); }
         { src: "{{ASSET:assets/vitz-front.jpg}}", alt: "Toyota Vitz, front view — photo of the model" }
       ],
       photoNote: "Photo shows the model",
-      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
-      blurb: "A 2016 Vitz in white. Small, light on fuel and simple to drive — the car most of our customers end up in for a week of work or a family visit. We run two of these; if one is out, the other usually is not. The photos show a Vitz of the same model and year — this one is white." },
+      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"] },
 
     { id: "vitz-w2", name: "Toyota Vitz — white", plate: "KLTA 6234", rate: 60, art: "micro",
       photos: [
@@ -696,21 +698,18 @@ input:hover, select:hover { border-color: var(--muted); }
         { src: "{{ASSET:assets/vitz-front.jpg}}", alt: "Toyota Vitz, front view — photo of the model" }
       ],
       photoNote: "Photo shows the model",
-      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
-      blurb: "The second white 2016 Vitz, the same as the one above in every way that matters. Book either and we will hand over whichever is free on your dates. The photos show a Vitz of the same model and year — this one is white." },
+      specs: ["2016 model", "White", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"] },
 
     { id: "vitz-g", name: "Toyota Vitz — gray", plate: "KLTA 6247", rate: 60, art: "micro",
       photos: [
         { src: "{{ASSET:assets/vitz-side.jpg}}",  alt: "Silver Toyota Vitz, side view" },
         { src: "{{ASSET:assets/vitz-front.jpg}}", alt: "Silver Toyota Vitz, front view" }
       ],
-      specs: ["2017 model", "Gray", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"],
-      blurb: "The newest of the three Vitz, a 2017 in gray. Same size and same money as the white pair, a year younger." },
+      specs: ["2017 model", "Gray", "Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol"] },
 
     { id: "sixth", name: "Sixth car", plate: "", rate: 60, art: "sedan",
       photos: [],
-      specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"],
-      blurb: "The last car in the fleet, on the same $60 a day. Photos and full details are coming — call us and we will tell you what it is and whether it is free on your dates." }
+      specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"] }
   ];
 
   var LOCATIONS = [
@@ -843,7 +842,6 @@ input:hover, select:hover { border-color: var(--muted); }
             '<button type="button" class="pick" data-car="' + c.id + '">Choose this vehicle</button>' +
           '</div>' +
         '</div>' +
-        '<p class="blurb">' + c.blurb + '</p>' +
       '</article>';
     }).join("");
 
