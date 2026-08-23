@@ -316,6 +316,46 @@ select {
   padding-right: 32px;
 }
 input:hover, select:hover { border-color: var(--muted); }
+/* Availability calendar — booked days come from bookings.json, and clicking
+   a day drives the same two date inputs, so picker and calendar cannot drift. */
+.cal-wrap { margin-top: 18px; border: 1px solid var(--line); background: var(--white); max-width: 400px; }
+.cal-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border-bottom: 1px solid var(--line-soft);
+}
+.cal-title { font-family: "Barlow Semi Condensed", sans-serif; font-weight: 700; font-size: 1.05rem; }
+.cal-nav { display: flex; gap: 6px; }
+.cal-nav button {
+  width: 32px; height: 30px; border: 1px solid var(--line); background: var(--white);
+  cursor: pointer; font: inherit; font-size: 15px; line-height: 1; color: var(--head);
+  display: grid; place-items: center;
+}
+.cal-nav button:hover { border-color: var(--pink); color: var(--pink); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; padding: 10px 12px 12px; }
+.cal-grid .dow {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); text-align: center; padding-bottom: 6px;
+}
+.cal-grid button, .cal-grid .pad {
+  height: 40px; border: 0; background: transparent;
+  font: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer;
+  display: grid; place-items: center; font-variant-numeric: tabular-nums;
+}
+.cal-grid button:hover:not(:disabled) { background: var(--pink-pale); }
+.cal-grid button.past { color: #C4C4C4; cursor: default; }
+.cal-grid button.past:hover { background: transparent; }
+.cal-grid button.today { box-shadow: inset 0 0 0 1px var(--muted); }
+.cal-grid button.booked { background: #FBE3E7; color: var(--note); text-decoration: line-through; }
+.cal-grid button.sel { background: var(--pink); color: var(--white); }
+.cal-grid button.sel.booked { background: var(--note); color: var(--white); }
+.cal-key { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 0 12px 12px; font-size: 12px; color: var(--muted); }
+.cal-key span { display: inline-flex; align-items: center; gap: 6px; }
+.cal-key i { width: 11px; height: 11px; display: inline-block; }
+.cal-key .k-book { background: #FBE3E7; box-shadow: inset 0 0 0 1px var(--note); }
+.cal-key .k-sel { background: var(--pink); }
+.cal-hint { padding: 0 12px 12px; font-size: 12.5px; color: var(--muted); }
+.cal-clash { padding: 0 12px 12px; font-size: 13px; font-weight: 600; color: var(--note); }
+
 .date-err { display: none; margin-top: 12px; color: var(--note); font-size: 13px; font-weight: 500; }
 .date-err.show { display: block; }
 
@@ -510,6 +550,23 @@ input:hover, select:hover { border-color: var(--muted); }
             </div>
           </div>
           <p class="date-err" id="date-err" role="alert">The return date needs to be after the collection date.</p>
+
+          <div class="cal-wrap" id="cal-wrap">
+            <div class="cal-head">
+              <span class="cal-title" id="cal-title">—</span>
+              <span class="cal-nav">
+                <button type="button" id="cal-prev" aria-label="Previous month">&#8249;</button>
+                <button type="button" id="cal-next" aria-label="Next month">&#8250;</button>
+              </span>
+            </div>
+            <div class="cal-grid" id="cal-grid" role="group" aria-label="Choose your dates"></div>
+            <p class="cal-key">
+              <span><i class="k-sel"></i> Your dates</span>
+              <span><i class="k-book"></i> Already hired</span>
+            </p>
+            <p class="cal-hint" id="cal-hint"></p>
+            <p class="cal-clash" id="cal-clash" role="alert" hidden></p>
+          </div>
 
         </form>
 
@@ -810,38 +867,167 @@ input:hover, select:hover { border-color: var(--muted); }
         b.textContent = b.dataset.car === state.car ? "Chosen" : "Choose this vehicle";
       });
       update();
+      renderCal();
       $("book").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
-  /* ---------- availability ----------
-     status.json sits beside index.html and is what the owner edits. Anything
-     other than "available" is shown as the wording they typed, so "out until
-     3 September" reads back verbatim. On the Artifact build the file is not
-     there and the fetch simply fails, leaving every car as Available. */
-  function paintStatus(id, value) {
-    var box = document.querySelector('[data-status-for="' + id + '"]');
-    if (!box) { return; }
-    var raw = String(value == null ? "available" : value).trim();
-    var free = raw.toLowerCase() === "available";
-    var label = free ? "Available"
-              : raw.toLowerCase() === "out" || raw === "" ? "Not available"
-              : raw;
-    box.classList.toggle("out", !free);
-    box.querySelector(".txt").textContent = label;
+  /* ---------- availability and the calendar ----------
+     bookings.json lists, per car, the times it is out as {from, to} where "to"
+     is the day it comes back. A car is out on days from <= d < to, which is the
+     same span the quote charges for, so the badge, the calendar and the price
+     can never disagree. On the Artifact build there is no file to fetch, the
+     request fails, and every car reads Available with an empty calendar. */
+  var BOOKINGS = {};
+
+  function addDays(isoStr, n) {
+    var d = new Date(isoStr + "T00:00:00");
+    d.setDate(d.getDate() + n);
+    return iso(d);
+  }
+  function prettyShort(isoStr) {
+    var p = isoStr.split("-");
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]))
+      .toLocaleDateString("en-AU", { day: "numeric", month: "short" });
+  }
+  function bookingsFor(id) { return BOOKINGS[id] || []; }
+  function bookedOn(id, day) {
+    return bookingsFor(id).some(function (b) { return b.from <= day && day < b.to; });
+  }
+  function clashFor(id, from, to) {
+    return bookingsFor(id).filter(function (b) { return from < b.to && b.from < to; });
   }
 
-  function initStatus() {
+  function statusFor(id) {
+    var today = iso(new Date());
+    var out = bookingsFor(id).filter(function (b) { return b.from <= today && today < b.to; })[0];
+    return out ? { free: false, label: "Out until " + prettyShort(out.to) }
+               : { free: true, label: "Available" };
+  }
+
+  function paintStatuses() {
+    FLEET.forEach(function (c) {
+      var box = document.querySelector('[data-status-for="' + c.id + '"]');
+      if (!box) { return; }
+      var st = statusFor(c.id);
+      box.classList.toggle("out", !st.free);
+      box.querySelector(".txt").textContent = st.label;
+    });
+  }
+
+  function initBookings() {
+    paintStatuses();
     if (!window.fetch) { return; }
-    fetch("status.json?t=" + Date.now(), { cache: "no-store" })
+    fetch("bookings.json?t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
-        if (!data) { return; }
-        FLEET.forEach(function (c) {
-          if (Object.prototype.hasOwnProperty.call(data, c.id)) { paintStatus(c.id, data[c.id]); }
-        });
+        if (!data || !data.cars) { return; }
+        BOOKINGS = data.cars;
+        paintStatuses();
+        renderCal();
+        update();
       })
-      .catch(function () { /* no file, no network: every car stays Available */ });
+      .catch(function () { /* no file, no network: everything reads Available */ });
+  }
+
+  /* ---------- the month calendar ---------- */
+  var calMonth = null;    // first day of the month on show
+  var awaitingTo = false; // true once a collection day is tapped, so the next tap extends
+
+  function monthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+
+  function renderCal() {
+    var grid = $("cal-grid");
+    var hint = $("cal-hint");
+    if (!grid) { return; }
+
+    if (!calMonth) { calMonth = monthStart(state.from ? new Date(state.from + "T00:00:00") : new Date()); }
+
+    $("cal-title").textContent =
+      calMonth.toLocaleDateString("en-AU", { month: "long", year: "numeric" });
+
+    var today = iso(new Date());
+    var year = calMonth.getFullYear();
+    var mon = calMonth.getMonth();
+    var first = new Date(year, mon, 1);
+    var lead = (first.getDay() + 6) % 7;              // weeks run Monday to Sunday
+    var days = new Date(year, mon + 1, 0).getDate();
+
+    var html = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      .map(function (d) { return '<span class="dow">' + d + "</span>"; }).join("");
+    for (var i = 0; i < lead; i++) { html += '<span class="pad"></span>'; }
+
+    for (var day = 1; day <= days; day++) {
+      var ds = year + "-" + String(mon + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+      var cls = [];
+      if (ds < today) { cls.push("past"); }
+      if (ds === today) { cls.push("today"); }
+      if (state.car && bookedOn(state.car, ds)) { cls.push("booked"); }
+      if (state.from && state.to && ds >= state.from && ds < state.to) { cls.push("sel"); }
+      html += '<button type="button" data-day="' + ds + '"' +
+              (cls.length ? ' class="' + cls.join(" ") + '"' : "") +
+              (ds < today ? " disabled" : "") + ">" + day + "</button>";
+    }
+    grid.innerHTML = html;
+
+    if (!state.car) {
+      hint.textContent = "Choose a car above and its hired days appear here.";
+    } else {
+      var future = bookingsFor(state.car).filter(function (b) { return b.to > today; });
+      hint.textContent = awaitingTo
+        ? "Now tap the day you would bring it back."
+        : future.length
+          ? "Already hired: " + future.map(function (b) {
+              return prettyShort(b.from) + " to " + prettyShort(b.to);
+            }).join(", ") + "."
+          : "This car has nothing booked — every day is free.";
+    }
+    paintClash();
+  }
+
+  function paintClash() {
+    var box = $("cal-clash");
+    if (!box) { return; }
+    var hit = state.car && state.from && state.to ? clashFor(state.car, state.from, state.to) : [];
+    if (!hit.length) { box.hidden = true; box.textContent = ""; return; }
+    box.hidden = false;
+    box.textContent = "That car is already hired " +
+      hit.map(function (b) { return prettyShort(b.from) + " to " + prettyShort(b.to); }).join(" and ") +
+      ". Pick other dates, or choose another car — several are the same $60 a day.";
+  }
+
+  function initCal() {
+    var grid = $("cal-grid");
+    if (!grid) { return; }
+    grid.addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-day]");
+      if (!btn || btn.disabled) { return; }
+      var day = btn.dataset.day;
+      // Tap a collection day, then a return day. The first tap also sets a
+      // one-day return so the form is never holding an invalid range, and
+      // awaitingTo is what lets the second tap extend it rather than start over.
+      if (awaitingTo && day > state.from) {
+        state.to = day;
+        awaitingTo = false;
+      } else {
+        state.from = day;
+        state.to = addDays(day, 1);
+        awaitingTo = true;
+      }
+      $("d-from").value = state.from;
+      $("d-to").value = state.to;
+      $("d-to").min = state.from;
+      renderCal();
+      update();
+    });
+    $("cal-prev").addEventListener("click", function () {
+      calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1);
+      renderCal();
+    });
+    $("cal-next").addEventListener("click", function () {
+      calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1);
+      renderCal();
+    });
   }
 
   /* ---------- spec dropdowns ---------- */
@@ -969,9 +1155,12 @@ input:hover, select:hover { border-color: var(--muted); }
       ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
         ? "Set a collection and return date. Minimum hire is one day."
-        : "No bond. Any damage is settled through the hire contract you sign at hand-over.";
+        : clashFor(state.car, state.from, state.to).length
+          ? "This car is already hired for part of those dates — see the calendar."
+          : "No bond. Any damage is settled through the hire contract you sign at hand-over.";
 
     $("btn-email").href = mailto(q);
+    paintClash();
   }
 
   function mailto(q) {
@@ -1017,7 +1206,8 @@ input:hover, select:hover { border-color: var(--muted); }
 
     renderFleet();
     initDropdowns();
-    initStatus();
+    initCal();
+    initBookings();
     initGalleries();
     initReveal();
     renderLocations();
@@ -1038,9 +1228,12 @@ input:hover, select:hover { border-color: var(--muted); }
         state.to = iso(next);
         t.value = state.to;
       }
+      awaitingTo = false;
+      if (state.from) { calMonth = new Date(state.from + "T00:00:00"); calMonth.setDate(1); }
       update();
+      renderCal();
     });
-    t.addEventListener("change", function () { state.to = t.value; update(); });
+    t.addEventListener("change", function () { state.to = t.value; awaitingTo = false; update(); renderCal(); });
     $("l-from").addEventListener("change", function (e) { state.locFrom = e.target.value; update(); });
     $("l-to").addEventListener("change", function (e) { state.locTo = e.target.value; update(); });
     $("booker").addEventListener("submit", function (e) {

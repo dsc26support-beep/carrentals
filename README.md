@@ -13,7 +13,8 @@ gallery, and a hire is priced live as you pick dates and hand-over points.
 | --- | --- |
 | `src/page.html` | The page — content, styles and script in one file, with photos written as `{{ASSET:path}}` tokens. **Edit this.** |
 | `assets/` | The car photos, resized to 1200px wide. |
-| `status.json` | Which cars are free. **This is the file to edit day to day** — see below. |
+| `bookings.json` | When each car is hired. Written by the back office; safe to edit by hand. |
+| `admin.html` | The back office — the owner's calendar for marking cars out. |
 | `build.sh` | Builds both outputs from `src/page.html`. |
 | `index.html` | Generated. Asset tokens become relative paths; this is what GitHub Pages serves. Don't edit by hand. |
 | `dist/artifact.html` | Generated and git-ignored. Asset tokens become base64 data URIs so the page is fully self-contained, for publishing as a Claude Artifact. |
@@ -25,28 +26,47 @@ gallery, and a hire is priced live as you pick dates and hand-over points.
 No dependencies and no server. The only external request is the Google Fonts
 stylesheet; if it's blocked the page falls back to system fonts.
 
-## Marking a car as out (no developer needed)
+## The back office
 
-Every car shows **Available** in green or its own out-of-service wording in red,
-read from `status.json` when the page loads. To change one:
+**https://dsc26support-beep.github.io/carrentals/admin.html**
 
-1. Open `status.json` on github.com — or in the GitHub mobile app — and tap the
-   pencil to edit.
-2. Change that car's word from `available` to `out`, or to your own wording:
-   `"fit": "out until 3 September"` shows exactly that on the card.
-3. Commit the change. The site updates for everyone within about a minute.
+Choose a car, tap the first day it goes out and the day it comes back, add a note
+if you like, then press **Save to the website**. About a minute later the car's
+badge on the public site reads "Out until 3 Sept", its hired days are shaded on
+the customer's calendar, and anyone who picks those dates is told the car is
+taken.
 
-Only the word `available` (in any casing) shows the green badge. `out` shows
-"Not available", and anything else is shown back word for word. The keys are the
-`id` of each car in `FLEET`, so a new car needs a line here as well.
+### Setting up the key, once
 
-A car marked out can still be chosen and priced — the badge tells the customer,
-and you sort the dates out when you reply.
+The page needs a GitHub token to save. Make it a **fine-grained personal access
+token**, scoped as narrowly as it will go:
 
-The file is fetched with `cache: "no-store"` and a cache-busting timestamp, so a
-returning visitor sees the change rather than a stale copy. On the Artifact build
-there is no `status.json` to fetch, the request simply fails, and every car falls
-back to Available.
+1. github.com → Settings → Developer settings → **Fine-grained tokens** → Generate new token.
+2. **Repository access:** Only select repositories → `carrentals`.
+3. **Permissions:** Repository permissions → **Contents: Read and write**. Nothing else.
+4. Set an expiry, then generate and copy the token.
+5. Paste it into the back office and press **Save key and load bookings**. The
+   phone remembers it from then on.
+
+The back office page is public — GitHub Pages has no login — so the token is the
+only thing protecting the site. It is stored in that browser's local storage,
+never sent anywhere except api.github.com, and **Forget key** removes it. Don't
+open the page on a shared device, and if a phone goes missing, revoke the token
+on GitHub and make a new one.
+
+### Editing bookings.json by hand
+
+The file is plain JSON, so it can also be edited straight on github.com:
+
+```json
+"fit": [ { "from": "2026-09-01", "to": "2026-09-06", "note": "Teroro" } ]
+```
+
+`to` is the day the car comes back, so it is free again on that date — the same
+span the quote charges for. A car is "out" when today falls inside one of its
+periods; otherwise it reads Available. Anything unrecognised is ignored, and if
+the file cannot be fetched at all — as on the Artifact build — every car simply
+reads Available.
 
 ## Adding or changing a car
 
