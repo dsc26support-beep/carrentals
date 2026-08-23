@@ -272,22 +272,6 @@ input:hover, select:hover { border-color: var(--muted); }
 .date-err { display: none; margin-top: 12px; color: var(--note); font-size: 13px; font-weight: 500; }
 .date-err.show { display: block; }
 
-.extras-head { margin-top: 24px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--head); }
-.extras { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line-soft); }
-.extras li { border-bottom: 1px solid var(--line-soft); }
-.extras label { display: flex; align-items: center; gap: 11px; padding: 10px 2px; cursor: pointer; font-size: 14px; }
-.extras input { width: 16px; height: 16px; accent-color: var(--pink); flex: none; }
-.extras .price { margin-left: auto; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-.go {
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-top: 22px; padding: 11px 40px; border: 1px solid var(--pink); border-radius: 999px;
-  background: var(--white); color: var(--pink); cursor: pointer;
-  font: inherit; font-weight: 600; font-size: 14.5px; letter-spacing: .03em;
-  transition: background-color .15s ease, color .15s ease;
-}
-.go:hover { background: var(--pink); color: var(--white); }
-
 .summary { border: 1px solid var(--line); }
 .summary h3 {
   color: var(--pink); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
@@ -306,7 +290,7 @@ input:hover, select:hover { border-color: var(--muted); }
 }
 .summary-total .v.bump { animation: bump .5s ease; }
 @keyframes bump { 0% { color: var(--pink); transform: scale(1.06); } 100% { color: var(--head); transform: none; } }
-.summary-bond { font-size: 12.5px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.summary-note { font-size: 12.5px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
 .summary-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .summary-actions a {
   text-align: center; text-decoration: none; font-size: 13.5px; font-weight: 600;
@@ -387,16 +371,16 @@ input:hover, select:hover { border-color: var(--muted); }
 
 <nav class="tabs" id="top" aria-label="Sections">
   <div class="wrap">
-    <a href="#pick" class="on">Pick</a>
+    <a href="#choose" class="on">Choose</a>
     <a href="#book">Book</a>
     <a href="#general">General information</a>
   </div>
 </nav>
 
 <main>
-  <section class="wrap category" id="pick">
+  <section class="wrap category" id="choose">
     <h1>Every car, $60 a day</h1>
-    <p class="note">One price for the whole fleet — $60 per day in Australian dollars. A refundable $300 bond is held at hand-over and returned with the keys.</p>
+    <p class="note">One price for the whole fleet — $60 per day in Australian dollars.</p>
     <p class="sub">Three cars, kept and serviced on-island. Choose one to price your hire.</p>
 
     <div class="showcase-wrap">
@@ -448,10 +432,6 @@ input:hover, select:hover { border-color: var(--muted); }
           </div>
           <p class="date-err" id="date-err" role="alert">The return date needs to be after the collection date.</p>
 
-          <p class="extras-head">Extras</p>
-          <ul class="extras" id="extras"></ul>
-
-          <button type="submit" class="go">Look for</button>
         </form>
 
         <aside class="summary" aria-labelledby="sum-h">
@@ -462,7 +442,7 @@ input:hover, select:hover { border-color: var(--muted); }
               <span class="k">Total to pay</span>
               <span class="v" id="sum-total" aria-live="polite">$0</span>
             </div>
-            <p class="summary-bond" id="sum-bond">Choose a vehicle and your dates to see the price.</p>
+            <p class="summary-note" id="sum-note">Choose a vehicle and your dates to see the price.</p>
             <div class="summary-actions">
               <a class="solid" id="btn-email" href="#">Email this booking</a>
               <a class="hollow" href="tel:+68673053005">Call +686 73053005</a>
@@ -485,7 +465,7 @@ input:hover, select:hover { border-color: var(--muted); }
         </div>
         <div>
           <h4>Fuel</h4>
-          <p>Return the tank as you got it, or add a prepaid full tank to your booking and hand the vehicle back at any level.</p>
+          <p>Return the tank as you got it. If you would rather pay for a full tank up front and bring the car back at any level, tell us when you book.</p>
         </div>
         <div>
           <h4>Bond</h4>
@@ -533,7 +513,7 @@ input:hover, select:hover { border-color: var(--muted); }
 
   /* ---------- data: edit rates and specs here ---------- */
   var FLEET = [
-    { id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, bond: 300, art: "sedan",
+    { id: "march", name: "Nissan March", plate: "KLTA 6113", rate: 60, art: "sedan",
       photos: [
         { src: "{{ASSET:assets/march-front.jpg}}", alt: "Red Nissan March, front view" },
         { src: "{{ASSET:assets/march-rear.jpg}}",  alt: "Red Nissan March, rear view" }
@@ -541,7 +521,7 @@ input:hover, select:hover { border-color: var(--muted); }
       specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Hatchback boot"],
       blurb: "A small hatchback and the easiest car we have to drive and to park. Light on fuel, quick through Bairiki and Betio, and comfortable for the run out to Bonriki. Good for a couple, a small family, or anyone here for a week of meetings." },
 
-    { id: "fit", name: "Honda Fit", plate: "KLTA 6991", rate: 60, bond: 300, art: "micro",
+    { id: "fit", name: "Honda Fit", plate: "KLTA 6991", rate: 60, art: "micro",
       photos: [
         { src: "{{ASSET:assets/fit-side.jpg}}",  alt: "Black Honda Fit, side view" },
         { src: "{{ASSET:assets/fit-front.jpg}}", alt: "Black Honda Fit, front view" }
@@ -549,7 +529,7 @@ input:hover, select:hover { border-color: var(--muted); }
       specs: ["Automatic transmission", "5 passengers", "5 doors", "Air-conditioning", "Petrol", "Deep rear load space"],
       blurb: "The same money as the March with more room behind the back seats. Fold them flat and it takes eskies, bags of copra, a market run or a load of luggage. The car to take when there are five of you and gear as well." },
 
-    { id: "third", name: "Third car", plate: "", rate: 60, bond: 300, art: "sedan",
+    { id: "third", name: "Third car", plate: "", rate: 60, art: "sedan",
       photos: [],
       specs: ["5 passengers", "Air-conditioning", "Petrol", "Same $60 a day"],
       blurb: "Our third car, on the same $60 a day. Photos and full details are coming — call us and we will tell you what it is and whether it is free on your dates." }
@@ -564,20 +544,13 @@ input:hover, select:hover { border-color: var(--muted); }
     { id: "other",   label: "Your hotel or house (South Tarawa)", fee: 20 }
   ];
 
-  var EXTRAS = [
-    { id: "seat",   name: "Child seat",          note: "Fitted and checked before hand-over",  price: 8,  per: "day" },
-    { id: "driver", name: "Second driver",       note: "Anyone else who might take the wheel", price: 15, per: "hire" },
-    { id: "fuel",   name: "Prepaid full tank",   note: "Bring it back at any level",           price: 45, per: "hire" },
-    { id: "esky",   name: "Esky and two chairs", note: "For the ocean side on a Sunday",       price: 5,  per: "day" }
-  ];
-
   var DISCOUNTS = [
     { days: 21, rate: 0.25, label: "Monthly rate (21+ days)" },
     { days: 7,  rate: 0.15, label: "Weekly rate (7+ days)" },
     { days: 3,  rate: 0.05, label: "3-day rate" }
   ];
 
-  var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard", extras: {} };
+  var state = { car: null, from: null, to: null, locFrom: "yard", locTo: "yard" };
 
   var $ = function (id) { return document.getElementById(id); };
   var money = function (n) { return "$" + n.toLocaleString("en-AU", { maximumFractionDigits: 0 }); };
@@ -754,21 +727,6 @@ input:hover, select:hover { border-color: var(--muted); }
     Array.prototype.forEach.call(rows, function (r) { obs.observe(r); });
   }
 
-  function renderExtras() {
-    $("extras").innerHTML = EXTRAS.map(function (x) {
-      return '<li><label><input type="checkbox" data-extra="' + x.id + '">' +
-        '<span>' + x.name + ' — <span style="color:var(--muted)">' + x.note + '</span></span>' +
-        '<span class="price">' + money(x.price) + (x.per === "day" ? " / day" : " once") + '</span>' +
-      '</label></li>';
-    }).join("");
-    $("extras").addEventListener("change", function (e) {
-      var box = e.target.closest("input[data-extra]");
-      if (!box) { return; }
-      state.extras[box.dataset.extra] = box.checked;
-      update();
-    });
-  }
-
   function renderLocations() {
     var opts = LOCATIONS.map(function (l) {
       return '<option value="' + l.id + '">' + l.label + (l.fee ? " (+" + money(l.fee) + ")" : "") + "</option>";
@@ -813,15 +771,6 @@ input:hover, select:hover { border-color: var(--muted); }
     if (from && from.fee) { lines.push({ k: "Collection at " + shortLoc(from), v: money(from.fee) }); total += from.fee; }
     if (to && to.fee) { lines.push({ k: "Return at " + shortLoc(to), v: money(to.fee) }); total += to.fee; }
 
-    if (n > 0) {
-      EXTRAS.forEach(function (x) {
-        if (!state.extras[x.id]) { return; }
-        var cost = x.per === "day" ? x.price * n : x.price;
-        lines.push({ k: x.name + (x.per === "day" ? " × " + n : ""), v: money(cost) });
-        total += cost;
-      });
-    }
-
     return { lines: lines, total: total, n: n, car: car };
   }
 
@@ -844,11 +793,11 @@ input:hover, select:hover { border-color: var(--muted); }
       void totalEl.offsetWidth;
       totalEl.classList.add("bump");
     }
-    $("sum-bond").textContent = !q.car
+    $("sum-note").textContent = !q.car
       ? "Choose a vehicle and your dates to see the price."
       : q.n === 0
         ? "Set a collection and return date. Minimum hire is one day."
-        : "Plus a refundable " + money(q.car.bond) + " bond, held at hand-over and returned with the keys.";
+        : "Collection and return between Betio and Bikenibeu are free.";
 
     $("btn-email").href = mailto(q);
   }
@@ -861,11 +810,9 @@ input:hover, select:hover { border-color: var(--muted); }
       "Return:      " + pretty(state.to) + " at " + shortLoc(locById(state.locTo)),
       "Days:        " + q.n
     ];
-    var chosen = EXTRAS.filter(function (x) { return state.extras[x.id]; }).map(function (x) { return x.name; });
-    lines.push("Extras:      " + (chosen.length ? chosen.join(", ") : "none"), "");
+    lines.push("");
     q.lines.forEach(function (l) { lines.push("  " + l.k + " — " + l.v); });
     lines.push("", "Quoted total: " + money(q.total) + " AUD");
-    if (q.car) { lines.push("Bond: " + money(q.car.bond) + " AUD, refundable"); }
     lines.push("", "My name: ", "Best number to reach me: ", "Licence issued in: ");
 
     return "mailto:ruuka4climatechange@gmail.com" +
@@ -899,7 +846,6 @@ input:hover, select:hover { border-color: var(--muted); }
     renderFleet();
     initGalleries();
     initReveal();
-    renderExtras();
     renderLocations();
 
     var f = $("d-from");
