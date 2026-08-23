@@ -36,6 +36,46 @@ badge on the public site reads "Out until 3 Sept", its hired days are shaded on
 the customer's calendar, and anyone who picks those dates is told the car is
 taken.
 
+### A booking request from a customer
+
+The customer fills in the booking form on the website — car, dates, hand-over
+points, their name and a number — and presses **Send booking request**. That
+opens WhatsApp (or their email) with the whole booking written out, and one
+extra line at the end:
+
+    Reference (for Tenana Rentals):
+    https://dsc26support-beep.github.io/carrentals/admin.html#r=MXxtYXJjaHwy…
+
+Tap that link. The back office opens with a **Booking request** card at the top
+holding the car, the dates, the hand-over points, the price they were quoted,
+and their number as a one-tap call. Then:
+
+| Button | What it does |
+|---|---|
+| **Hold these days** | Marks the days amber on the public calendar — someone has asked, nothing is settled. Other customers can still ask for them. |
+| **Confirm booking** | Marks the days as a hire, exactly like adding one by hand. |
+| **Decline** | Closes the card. Nothing is written. |
+
+Either of the first two only stages the change — you still press **Save to the
+website**, so a request never becomes a booking without you. A held entry shows
+an amber "on hold" tag in the list below, with a **Confirm** button beside
+**Remove** for when the customer pays.
+
+The card refuses to add anything that lands on a hire you have already
+confirmed, and says so. It will let you take days somebody else is only holding
+— it tells you, and you decide between them.
+
+There is no server behind any of this. The request rides inside the message the
+customer sends you, packed into the part of the link after the `#`, which
+browsers never send to a server — so their name and number stay between the two
+of you. The consequence: **a hold starts when you open the link, not when the
+customer presses send.** Until you open it, nothing on the internet knows the
+request exists. The message in your WhatsApp is the queue.
+
+**Never put a phone number into `bookings.json`.** That file is public — anyone
+can read it. The request card shows you the number but saves only the name, and
+the name field is yours to shorten or clear before you save.
+
 ### Setting up the key, once
 
 The page needs a GitHub token to save. Make it a **fine-grained personal access
