@@ -11,8 +11,9 @@
     "test:db": "./tests/db/run.sh",
     "check": "node scripts/check.mjs",
     "test:e2e": "node tests/e2e/site.mjs",
+    "test:e2e:admin": "node tests/e2e/admin.mjs",
     "serve": "python3 -m http.server 8741",
-    "test:all": "npm run check && npm test && npm run test:e2e"
+    "test:all": "npm run check && npm test && npm run test:e2e && npm run test:e2e:admin"
   },
   "devDependencies": {}
 }
