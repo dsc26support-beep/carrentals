@@ -2,7 +2,10 @@ import { chromium } from "playwright";
 import { stubSupabase, VEHICLES } from "./fixture.mjs";
 
 const BASE = "http://127.0.0.1:8741/public/index.html";
-const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+// This sandbox ships Chromium at a fixed path; CI installs its own and lets
+// Playwright find it. Hardcoding the sandbox path made the suite unrunnable
+// anywhere else.
+const EXE = process.env.CHROME_PATH || undefined;
 let pass = 0, fail = 0;
 const check = (label, got, want = true) => {
   const okay = JSON.stringify(got) === JSON.stringify(want);
@@ -10,7 +13,7 @@ const check = (label, got, want = true) => {
   okay ? pass++ : fail++;
 };
 
-const browser = await chromium.launch({ executablePath: EXE });
+const browser = await chromium.launch(EXE ? { executablePath: EXE } : {});
 
 async function page(opts = {}) {
   const ctx = await browser.newContext({ viewport: opts.viewport || { width: 390, height: 844 } });

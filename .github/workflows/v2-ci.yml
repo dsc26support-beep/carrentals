@@ -1,0 +1,69 @@
+# Tests for V2. Scoped to v2/ so it never runs against V1, which has no tests
+# and is deliberately left alone.
+name: V2 tests
+
+on:
+  push:
+    paths: ["v2/**", ".github/workflows/v2-ci.yml"]
+  pull_request:
+    paths: ["v2/**", ".github/workflows/v2-ci.yml"]
+
+defaults:
+  run:
+    working-directory: v2
+
+jobs:
+  checks:
+    name: guards and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+
+      # Five rules that encode promises made during the design: no privileged
+      # key in the browser, no date system creeping back, no page claiming a
+      # rental is confirmed, no pre-ticked consent, no image without alt text.
+      - run: npm run check
+      - run: npm test
+
+  database:
+    name: schema and row-level security
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      # Applies the real migrations to an empty database, then asserts the
+      # constraints reject bad data and the policies grant and deny correctly
+      # for anon, a signed-in non-admin, an admin, and the service role.
+      - name: Run migrations and assertions
+        run: ./tests/db/run.sh
+        env:
+          PGHOST: localhost
+          PGPORT: 5433
+
+  browser:
+    name: customer page
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - run: npm install --no-save playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Serve and test
+        run: |
+          python3 -m http.server 8741 --bind 127.0.0.1 &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8741/ >/dev/null && break; sleep 0.5; done
+          node tests/e2e/site.mjs
