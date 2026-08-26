@@ -12,9 +12,29 @@ Rentals are confirmed **by phone only**. The website never confirms a booking.
 |---|---|
 | `supabase/migrations/` | ✅ eight migrations, applied and tested |
 | `supabase/seed.sql` | ✅ five vehicles, business settings, **no customer data** |
-| `supabase/config.toml` | ✅ |
-| `tests/db/` | ✅ 61 assertions, all passing |
-| everything else | not built yet |
+| `shared/validate.js` | ✅ one validator, used by browser and server |
+| `public/` + `src/` | ✅ customer page |
+| `public/fonts/` | ✅ Barlow, self-hosted, Latin subset |
+| `tests/` | ✅ 15 unit + 61 database + 72 browser assertions |
+| `supabase/functions/` | ⬜ Edge Functions — not built |
+| `src/js/admin/` | ⬜ back office — not built |
+| `scripts/` | ⬜ build, image pipeline, guards — not built |
+
+Because there is no bundler yet, the page loads native ES modules and
+`public/index.html` refers to `../src/`. The build step will collapse that into
+hashed bundles in `dist/`.
+
+## Running the tests
+
+```sh
+npm test                    # 15 unit assertions on the shared validator
+npm run test:db             # 61 database assertions (see below)
+npm run test:e2e            # 72 browser assertions against the customer page
+```
+
+The browser tests stub Supabase with `tests/e2e/fixture.mjs`, so the page
+exercises its real network path rather than a pretend mode. Serve the directory
+first: `python3 -m http.server 8741` from `v2/`.
 
 ## Running the database tests
 
