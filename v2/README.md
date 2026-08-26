@@ -44,14 +44,17 @@ build survives and a rule kept in someone's head does not:
 
 | # | Rule |
 |---|---|
-| 1 | No key with a role other than `anon` reaches the browser — every JWT found is decoded and its role checked, rather than matching on names |
+| 1 | No privileged key reaches the browser, in **either** Supabase key format: legacy JWTs are decoded and their role checked; the newer opaque `sb_secret_…` keys are matched by prefix, since they are not JWTs and no amount of decoding will see them |
 | 2 | No date, calendar or booking-dates identifier creeps back into customer-facing code |
 | 3 | No customer-facing string claims a rental is confirmed, booked or reserved |
 | 4 | The marketing consent box is never pre-ticked |
 | 5 | No `<img>` without alt text |
 
-Each guard has been checked against a deliberate violation, so none of them is
-passing merely because it never fires.
+`tests/check.test.mjs` runs the guards against fixture trees and asserts each
+one both **fires on a violation** and **stays quiet on the legitimate near-miss**
+it must not confuse with one — the publishable key beside the secret key, honest
+wording beside a false confirmation. A guard verified once by hand is a guard
+that quietly stops working later.
 
 The browser tests stub Supabase with `tests/e2e/fixture.mjs`, so the page
 exercises its real network path rather than a pretend mode. Serve the directory
