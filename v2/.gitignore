@@ -1,0 +1,7 @@
+.env
+.env.local
+node_modules/
+dist/
+.netlify/
+supabase/.branches/
+supabase/.temp/
