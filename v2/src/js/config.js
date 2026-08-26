@@ -7,10 +7,18 @@
  * the Supabase and Netlify dashboards, and scripts/check.mjs fails the build if
  * anything secret-shaped reaches src/ or public/.
  *
- * The build replaces these two values from the environment.
+ * Both values below are committed on purpose, and both are public. The key is
+ * the `anon` role: it can read published vehicles and public settings and
+ * nothing else, because that is all the row-level security policies allow it to
+ * do. It cannot see a customer, a booking request or an administrator. If it
+ * looks like a leaked key, read supabase/migrations/0007_rls.sql — that file,
+ * not secrecy, is what protects the data.
  */
-export const SUPABASE_URL = "__SUPABASE_URL__";
-export const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+export const SUPABASE_URL = "https://cfttzzdyrupboarldvrf.supabase.co";
+export const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+  "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmdHR6emR5cnVwYm9hcmxkdnJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3MzY0MTksImV4cCI6MjEwMzMxMjQxOX0." +
+  "3cF2Y0ktUhUUmXfVpllLbz53QKxu0X4e6QEUFkn-TZ4";
 
 /** How long a cached vehicle list is served before revalidating. */
 export const CACHE_TTL_MS = 60_000;
