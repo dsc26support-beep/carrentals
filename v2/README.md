@@ -27,10 +27,31 @@ hashed bundles in `dist/`.
 ## Running the tests
 
 ```sh
+npm run check               # 5 guards (see below)
 npm test                    # 15 unit assertions on the shared validator
 npm run test:db             # 61 database assertions (see below)
-npm run test:e2e            # 72 browser assertions against the customer page
+npm run test:e2e            # 74 browser assertions against the customer page
+npm run test:all            # guards + unit + browser
 ```
+
+`.github/workflows/v2-ci.yml` runs all of these on every push that touches
+`v2/`. It is scoped by path so it never runs against V1.
+
+### The five guards
+
+`npm run check` fails the build on any of these, because a rule enforced by the
+build survives and a rule kept in someone's head does not:
+
+| # | Rule |
+|---|---|
+| 1 | No key with a role other than `anon` reaches the browser — every JWT found is decoded and its role checked, rather than matching on names |
+| 2 | No date, calendar or booking-dates identifier creeps back into customer-facing code |
+| 3 | No customer-facing string claims a rental is confirmed, booked or reserved |
+| 4 | The marketing consent box is never pre-ticked |
+| 5 | No `<img>` without alt text |
+
+Each guard has been checked against a deliberate violation, so none of them is
+passing merely because it never fires.
 
 The browser tests stub Supabase with `tests/e2e/fixture.mjs`, so the page
 exercises its real network path rather than a pretend mode. Serve the directory

@@ -11,7 +11,8 @@
     "test:db": "./tests/db/run.sh",
     "check": "node scripts/check.mjs",
     "test:e2e": "node tests/e2e/site.mjs",
-    "serve": "python3 -m http.server 8741"
+    "serve": "python3 -m http.server 8741",
+    "test:all": "npm run check && npm test && npm run test:e2e"
   },
   "devDependencies": {}
 }
