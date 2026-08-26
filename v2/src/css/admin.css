@@ -1,0 +1,115 @@
+/* Back office. Same palette and type as the customer site — it is the same
+   business — but laid out to be operated rather than read. */
+
+body { background: var(--panel); }
+
+/* ---------- sign in ---------- */
+.signin { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.signin__card {
+  width: 100%; max-width: 380px; background: var(--white);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px;
+}
+.signin__card h1 { font-size: 1.6rem; margin-bottom: 4px; }
+.signin__card .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+
+/* ---------- shell ---------- */
+.bar {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--head); color: var(--white);
+}
+.bar__in {
+  max-width: 1100px; margin-inline: auto; padding: 12px var(--gap);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.bar__who { font-size: 13px; color: rgba(255,255,255,.7); }
+.bar button {
+  background: none; border: 1px solid rgba(255,255,255,.35); color: var(--white);
+  border-radius: var(--radius); padding: 7px 14px; font-size: 13.5px; font-weight: 600;
+  min-height: 38px; cursor: pointer;
+}
+@media (hover: hover) { .bar button:hover { border-color: var(--white); } }
+
+.nav { background: var(--white); border-bottom: 1px solid var(--line); overflow-x: auto; }
+.nav__in { max-width: 1100px; margin-inline: auto; display: flex; padding-inline: var(--gap); }
+.nav a {
+  padding: 13px 15px; font-size: 14px; font-weight: 600; white-space: nowrap;
+  color: var(--muted); text-decoration: none; border-bottom: 3px solid transparent;
+}
+.nav a[aria-current="page"] { color: var(--pink); border-bottom-color: var(--pink); }
+
+main.admin { max-width: 1100px; margin-inline: auto; padding: 22px var(--gap) 80px; }
+.admin h2 { margin-bottom: 4px; }
+.admin .lede { color: var(--muted); font-size: 14.5px; margin-bottom: 20px; }
+
+/* ---------- cards and tables ---------- */
+.card {
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 14px;
+}
+.card h3 { margin-bottom: 10px; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.tile { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.tile dt { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tile dd { margin: 6px 0 0; font-family: var(--font-head); font-size: 2rem; font-weight: 700; color: var(--head); font-variant-numeric: tabular-nums; }
+.tile--attention dd { color: var(--pink); }
+
+.rows { display: grid; gap: 10px; }
+.row {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; display: grid; gap: 10px;
+}
+.row__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.row__name { font-family: var(--font-head); font-weight: 700; font-size: 1.15rem; color: var(--head); }
+.row__meta { font-size: 13.5px; color: var(--muted); }
+.row__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- the availability toggle: the control used most ---------- */
+.toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+.toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle__track {
+  width: 52px; height: 30px; border-radius: 999px; background: var(--note);
+  position: relative; transition: background .16s; flex: none;
+}
+.toggle__track::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--white); transition: transform .16s;
+}
+.toggle input:checked + .toggle__track { background: var(--ok); }
+.toggle input:checked + .toggle__track::after { transform: translateX(22px); }
+.toggle input:focus-visible + .toggle__track { outline: 3px solid var(--pink); outline-offset: 2px; }
+.toggle__label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.toggle--on .toggle__label { color: var(--ok); }
+.toggle--off .toggle__label { color: var(--note); }
+
+/* ---------- request pipeline ---------- */
+.pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.pill {
+  padding: 7px 13px; min-height: 38px; font-size: 13.5px; font-weight: 600;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--white);
+  color: var(--ink); cursor: pointer;
+}
+.pill[aria-pressed="true"] { background: var(--pink); border-color: var(--pink); color: var(--white); }
+
+.status-tag {
+  display: inline-block; padding: 3px 9px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+}
+.status-pending   { background: var(--pink-pale); color: var(--pink-dark); }
+.status-contacted { background: #FFF3DC; color: #8A5A08; }
+.status-confirmed { background: #E7F5EE; color: #0B6B3C; }
+.status-declined,
+.status-cancelled { background: var(--panel); color: var(--muted); }
+
+.contact-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.contact-actions a { font-size: 13.5px; }
+
+/* ---------- feedback ---------- */
+.msg { padding: 11px 14px; border-radius: var(--radius); font-size: 14px; margin-bottom: 14px; }
+.msg--ok   { background: #E7F5EE; color: #0B6B3C; border: 1px solid #B7E0CB; }
+.msg--bad  { background: #FBE3E7; color: var(--note); border: 1px solid #F0BFC8; }
+.msg--info { background: var(--white); color: var(--muted); border: 1px solid var(--line); }
+.msg:empty { display: none; }
+
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+.empty strong { display: block; color: var(--head); font-size: 1.05rem; margin-bottom: 4px; }
