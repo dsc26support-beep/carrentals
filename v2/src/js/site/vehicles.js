@@ -68,6 +68,11 @@ function gallery(vehicle) {
     ])
   );
 
+  // A caption is how a photo says "this is the model, not this exact car".
+  // V1 showed that as a visible tag; without it, a borrowed photo reads as a
+  // photo of the car you are about to hire.
+  const caption = vehicle.images.find((img) => img.caption);
+
   const bar = vehicle.images.length > 1
     ? el("div", { class: "gallery__bar" }, [
         el("button", { type: "button", class: "gallery__nav gallery__prev", "aria-label": "Previous photo", html: "&#8249;" }),
@@ -79,7 +84,11 @@ function gallery(vehicle) {
       ])
     : null;
 
-  return el("div", { class: "gallery" }, [el("div", { class: "gallery__track" }, slides), bar]);
+  return el("div", { class: "gallery" }, [
+    el("div", { class: "gallery__track" }, slides),
+    bar,
+    caption ? el("p", { class: "gallery__caption", text: caption.caption }) : null
+  ]);
 }
 
 function alsoLike(vehicle, all, onChoose) {
