@@ -11,7 +11,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT = path.resolve(import.meta.dirname, "..");
+// Defaults to the project, but takes a root so the guards can be run against
+// fixture trees — a guard nobody tests is a guard that quietly stops working.
+const rootArg = process.argv.indexOf("--root");
+const ROOT = rootArg > -1
+  ? path.resolve(process.argv[rootArg + 1])
+  : path.resolve(import.meta.dirname, "..");
 const failures = [];
 const fail = (rule, where, detail) => failures.push({ rule, where, detail });
 
@@ -31,19 +36,36 @@ const shipped = [...walk(path.join(ROOT, "src")), ...walk(path.join(ROOT, "publi
 const read = (f) => fs.readFileSync(f, "utf8");
 
 /* 1 ── No privileged key ever reaches the browser --------------------------
-   The anon key is public by design and belongs in config.js. The service-role
-   key ignores every security policy in the database. Rather than pattern-match
-   on names, decode every JWT found and check the role it actually carries. */
+   Supabase has two key formats and this has to cover both.
+
+   Legacy: a JWT carrying a role. `anon` is public by design and belongs in
+   config.js; `service_role` ignores every policy in the database. These are
+   checked by decoding the token and reading the role it actually claims — a
+   key is dangerous because of what it claims, not what the variable is called.
+
+   Current: opaque strings, `sb_publishable_…` (safe, the anon equivalent) and
+   `sb_secret_…` (privileged). These are not JWTs, so the decode above cannot
+   see them at all — an earlier version of this guard let a pasted
+   `sb_secret_…` key through untouched. Prefix matching is the only option for
+   an opaque token. */
 for (const file of shipped) {
   const text = read(file);
+
   for (const token of text.match(/eyJ[A-Za-z0-9_-]{10,}/g) || []) {
     let role = null;
     try { role = JSON.parse(Buffer.from(token, "base64url").toString()).role; }
     catch { continue; }                       // not a JWT payload segment
     if (role && role !== "anon") {
-      fail("privileged key shipped to the browser", rel(file), `a key with role "${role}"`);
+      fail("privileged key shipped to the browser", rel(file), `a JWT with role "${role}"`);
     }
   }
+
+  for (const key of text.match(/\bsb_[a-z]+_[A-Za-z0-9_-]{8,}/g) || []) {
+    if (!key.startsWith("sb_publishable_")) {
+      fail("privileged key shipped to the browser", rel(file), key.slice(0, 18) + "…");
+    }
+  }
+
   if (/service_role/.test(text)) {
     fail("service_role referenced in shipped code", rel(file), "it belongs only in Edge Functions");
   }
