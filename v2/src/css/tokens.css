@@ -1,0 +1,38 @@
+/* Design tokens. V1's palette and type, unchanged — this is not a redesign. */
+:root {
+  --pink: #E5007D;
+  --pink-dark: #B00062;
+  --pink-pale: #FCEBF4;
+  --note: #C8102E;
+  --ok: #0F8A4D;
+  --head: #232323;
+  --ink: #4A4A4A;
+  --muted: #7C7C7C;
+  --line: #DEDEDE;
+  --line-soft: #EDEDED;
+  --panel: #F8F8F8;
+  --white: #FFFFFF;
+
+  --font: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: "Barlow Semi Condensed", "Barlow", system-ui, sans-serif;
+
+  --wrap: 1080px;
+  --gap: 16px;
+  --radius: 4px;
+  --tap: 44px;              /* minimum touch target, everywhere */
+}
+
+/* Self-hosted, Latin subset. No third-party origin, which is also what lets the
+   content security policy keep font-src and style-src at 'self'. */
+@font-face {
+  font-family: "Barlow"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../../public/fonts/barlow-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Barlow"; font-style: normal; font-weight: 600; font-display: swap;
+  src: url("../../public/fonts/barlow-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../../public/fonts/barlow-condensed-700.woff2") format("woff2");
+}

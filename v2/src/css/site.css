@@ -1,0 +1,140 @@
+/* ---------- header ---------- */
+.site-head {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--white); border-bottom: 1px solid var(--line);
+}
+.site-head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+.brand__name { font-family: var(--font-head); font-weight: 700; font-size: 1.35rem; color: var(--head); letter-spacing: .01em; }
+.brand__dot { color: var(--pink); }
+.head-actions { display: flex; gap: 8px; }
+.head-actions .btn { padding: 8px 14px; font-size: 13.5px; min-height: 38px; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--panel); border-bottom: 1px solid var(--line); padding-block: 34px 30px; }
+.hero p { margin-top: 12px; font-size: 17px; max-width: 46ch; }
+.hero__price { color: var(--pink); }
+.hero__cta { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+
+/* ---------- vehicle list ---------- */
+.section { padding-block: 34px; }
+.section__head { margin-bottom: 18px; }
+.section__head p { color: var(--muted); margin-top: 4px; }
+
+.vehicles { display: grid; gap: 10px; }
+/* Grid and flex items default to min-width:auto, so a wide photo inside a row
+   stretches the row instead of scrolling within it. This is what keeps the page
+   from scrolling sideways on a phone. */
+.vehicles > * { min-width: 0; }
+
+.vehicle { border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); }
+.vehicle--out { background: var(--panel); }
+
+/* The whole row is one button, so the tap target is the row, not the arrow. */
+.vehicle__toggle {
+  width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;
+  padding: 14px 16px; background: none; border: 0; text-align: left; cursor: pointer;
+}
+/* The three lines stack. They are spans, so they need saying explicitly —
+   left inline they run together into one unreadable line. */
+.vehicle__name { display: block; font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; color: var(--head); }
+.vehicle__price { display: block; font-size: 15px; font-weight: 600; color: var(--pink); margin-top: 2px; }
+.vehicle__avail { display: block; margin-top: 6px; }
+.vehicle__chev { width: 22px; height: 22px; color: var(--muted); transition: transform .18s ease; }
+.vehicle__toggle[aria-expanded="true"] .vehicle__chev { transform: rotate(90deg); }
+@media (hover: hover) { .vehicle__toggle:hover .vehicle__name { color: var(--pink); } }
+
+.vehicle__panel { padding: 0 16px 16px; border-top: 1px solid var(--line-soft); }
+.vehicle__panel[hidden] { display: none; }
+
+.specs { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
+.specs li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; }
+.specs svg { color: var(--pink); flex: none; }
+
+.vehicle__note { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.vehicle__actions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- gallery (V1's carousel, applied where swiping earns its place) --- */
+.gallery { margin-top: 14px; }
+.gallery__track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; border-radius: var(--radius); background: var(--panel);
+}
+.gallery__track::-webkit-scrollbar { display: none; }
+.gallery__slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; }
+/* height:auto is load-bearing. The width/height attributes are presentation
+   hints, and a used height beats aspect-ratio — so without this the image keeps
+   its intrinsic 800px height and the row becomes a tower. The attributes still
+   do their real job: reserving the right box before the image loads. */
+.gallery__slide img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.gallery__art { display: grid; place-items: center; aspect-ratio: 3 / 2; color: var(--line); }
+.gallery__bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; }
+.gallery__dots { display: flex; gap: 6px; }
+.gallery__dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%;
+                background: var(--line); cursor: pointer; }
+.gallery__dot[aria-current="true"] { background: var(--pink); }
+.gallery__nav { width: 34px; height: 34px; display: grid; place-items: center;
+                border: 1px solid var(--line); border-radius: var(--radius);
+                background: var(--white); color: var(--head); cursor: pointer; }
+.gallery__count { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- recommendations ---------- */
+.also { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line-soft); }
+.also h3 { font-size: 1rem; margin-bottom: 12px; }
+.also__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.also__card { display: block; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius);
+              text-decoration: none; color: inherit; background: var(--white); }
+.also__card b { display: block; font-family: var(--font-head); font-size: 1.05rem; color: var(--head); }
+.also__card span { font-size: 14px; color: var(--pink); font-weight: 600; }
+
+/* ---------- how it works ---------- */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; margin-top: 16px; }
+.step__n { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+           background: var(--pink); color: var(--white); font-weight: 700; font-size: 14px; }
+.step h3 { margin: 10px 0 4px; }
+.step p { font-size: 14.5px; }
+
+/* ---------- request form ---------- */
+.request { background: var(--panel); border-top: 1px solid var(--line); }
+.request__grid { display: grid; gap: 22px; }
+.request__chosen { padding: 14px 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); }
+.request__chosen b { font-family: var(--font-head); font-size: 1.2rem; color: var(--head); display: block; }
+.request__chosen span { color: var(--pink); font-weight: 600; }
+.request__done { padding: 26px 20px; background: var(--white); border: 1px solid var(--ok); border-radius: var(--radius); text-align: center; }
+.request__done h3 { color: var(--ok); font-size: 1.25rem; }
+.request__done p { margin-top: 10px; }
+.request__ref { display: inline-block; margin-top: 12px; padding: 6px 12px; background: var(--panel);
+                font-family: ui-monospace, monospace; font-size: 14px; letter-spacing: .08em; }
+.request__ways { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+
+/* ---------- contact + footer ---------- */
+.contact-list { list-style: none; padding: 0; margin-top: 14px; display: grid; gap: 10px; }
+.contact-list a { display: flex; align-items: center; gap: 12px; min-height: var(--tap);
+                  padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+                  text-decoration: none; color: var(--head); font-weight: 600; background: var(--white); }
+.contact-list svg { flex: none; }
+.contact-list .m-phone { color: var(--pink); }
+.contact-list .m-wa { color: #25D366; }
+.contact-list .m-fb { color: #006AFF; }
+.contact-list .m-mail { color: var(--head); }
+
+.site-foot { border-top: 1px solid var(--line); margin-top: 30px; padding-block: 20px 90px; }
+.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between;
+                   font-size: 12.5px; color: var(--muted); }
+
+/* ---------- sticky call bar (mobile) ---------- */
+/* V1's only persistent action was a Messenger bubble. The phone is how a
+   rental actually closes, so it is on screen the whole way down. */
+.callbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  display: flex; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  background: var(--white); border-top: 1px solid var(--line);
+}
+.callbar .btn { flex: 1; }
+@media (min-width: 861px) { .callbar { display: none; } .site-foot { padding-bottom: 24px; } }
+
+/* ---------- wider screens ---------- */
+@media (min-width: 861px) {
+  .vehicles { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .request__grid { grid-template-columns: 1fr 1fr; align-items: start; }
+}

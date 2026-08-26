@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Rental South Tarawa, Kiribati — $60 a Day | Tenana Rentals</title>
+<meta name="description" content="Rent a car on South Tarawa from $60 a day. Delivered to the airport, your hotel or your house. No bond. Call 73053005 to book.">
+<link rel="canonical" href="https://tenanarentals.example/">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#E5007D">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tenana Rentals — Car Rental, South Tarawa">
+<meta property="og:description" content="Every car $60 a day, delivered anywhere on South Tarawa. Call 73053005.">
+<meta property="og:image" content="https://tenanarentals.example/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" href="fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../src/css/tokens.css">
+<link rel="stylesheet" href="../src/css/base.css">
+<link rel="stylesheet" href="../src/css/components.css">
+<link rel="stylesheet" href="../src/css/site.css">
+<script type="module" src="../src/js/site/main.js"></script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to the cars</a>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="brand__name">TENANA<span class="brand__dot">.</span></span>
+      <span class="sr-only">Tenana Rentals — car rental, South Tarawa</span>
+    </a>
+    <div class="head-actions">
+      <a class="btn btn--solid" data-call href="tel:+68673053005">Call</a>
+      <a class="btn" data-whatsapp href="https://wa.me/68673039089" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Car rental on South Tarawa — <span class="hero__price">$60 a day</span></h1>
+    <p>One price for every car. Call us and we will bring it to you — the airport,
+       your hotel, or your house.</p>
+    <div class="hero__cta">
+      <a class="btn btn--solid" href="#main">See the cars</a>
+      <a class="btn" data-call="labelled" href="tel:+68673053005">Call +686 7305 3005</a>
+    </div>
+  </div>
+</section>
+
+<main id="main">
+  <section class="section wrap">
+    <div class="section__head">
+      <h2>Our cars</h2>
+      <p><span id="fleet-count">—</span> cars, every one $60 a day. Tap a car to see it.</p>
+      <p class="notice" id="stale-notice" hidden>
+        Showing the information saved on this device — we could not reach the
+        internet just now. Prices and availability may have changed.
+      </p>
+    </div>
+    <div id="vehicles"></div>
+  </section>
+
+  <section class="section wrap">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step__n">1</span>
+        <h3>Choose a car</h3>
+        <p>Every car is $60 a day. Pick the one you like.</p>
+      </div>
+      <div class="step">
+        <span class="step__n">2</span>
+        <h3>Send your details</h3>
+        <p>Your name and a number we can reach you on. That is all we need.</p>
+      </div>
+      <div class="step">
+        <span class="step__n">3</span>
+        <h3>We call you</h3>
+        <p>We ring you to confirm the car and arrange the hand-over. Nothing is
+           booked until we have spoken.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section request" id="request">
+    <div class="wrap">
+      <h2>Ask about a car</h2>
+      <div class="request__grid">
+        <div>
+          <div class="request__chosen" id="request-chosen" hidden></div>
+
+          <form id="request-form" novalidate>
+            <div class="field">
+              <label for="f-name">Your name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required>
+              <span class="field__error" id="error-name" role="alert"></span>
+            </div>
+
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="320" required>
+              <span class="field__error" id="error-email" role="alert"></span>
+            </div>
+
+            <div class="field">
+              <label for="f-phone">Phone</label>
+              <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" required>
+              <span class="field__hint">A Kiribati number, like 73012345.</span>
+              <span class="field__error" id="error-phone" role="alert"></span>
+            </div>
+
+            <div class="field">
+              <label for="f-message">Anything we should know <span class="field__hint">(optional)</span></label>
+              <textarea id="f-message" name="message" rows="3" maxlength="1000"></textarea>
+              <span class="field__error" id="error-message" role="alert"></span>
+            </div>
+
+            <div class="consent">
+              <input id="f-consent" name="marketing_consent" type="checkbox" value="yes">
+              <label for="f-consent">Send me rental offers, updates and special promotions.</label>
+            </div>
+
+            <div class="trap" aria-hidden="true">
+              <label for="f-website">Leave this empty</label>
+              <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <span class="field__error" id="error-vehicle_id" role="alert"></span>
+            <span class="field__error" id="error-form" role="alert"></span>
+
+            <button class="btn btn--solid btn--block" id="request-submit" type="submit">Send booking request</button>
+          </form>
+
+          <div class="request__done" id="request-done" hidden></div>
+        </div>
+
+        <aside>
+          <h3>Or just call</h3>
+          <p>The fastest way to get a car is to ring us. We answer.</p>
+          <ul class="contact-list" id="contact-list"></ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span>&copy; <span id="year"></span> <span id="foot-name">Tenana Rentals</span> — <span id="foot-address"></span></span>
+    <span>Rates in Australian dollars</span>
+  </div>
+</footer>
+
+<nav class="callbar" aria-label="Contact us">
+  <a class="btn btn--solid" data-call href="tel:+68673053005">Call us</a>
+  <a class="btn" data-whatsapp href="https://wa.me/68673039089" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+</nav>
+
+<script type="module">document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

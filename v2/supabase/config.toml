@@ -1,0 +1,28 @@
+# Supabase local configuration for Tenana Rentals V2.
+# The project_id is the local container name, not a hosted project reference.
+project_id = "tenana-v2"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 200          # a request for "everything" cannot become a data dump
+
+[db]
+port = 54322
+major_version = 16
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+jwt_expiry = 3600                    # one hour, per the security model
+enable_signup = false                # admins are created deliberately, never self-served
+
+[auth.email]
+enable_signup = false
+enable_confirmations = true
+
+[storage]
+enabled = true
+file_size_limit = "8MiB"             # matches the upload rule in the security phase

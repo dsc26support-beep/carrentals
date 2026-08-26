@@ -1,0 +1,17 @@
+{
+  "name": "tenana-rentals-v2",
+  "private": true,
+  "type": "module",
+  "description": "Tenana Rentals V2. V1 lives at the repository root and is not touched.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:db": "./tests/db/run.sh",
+    "check": "node scripts/check.mjs",
+    "test:e2e": "node tests/e2e/site.mjs",
+    "serve": "python3 -m http.server 8741"
+  },
+  "devDependencies": {}
+}
