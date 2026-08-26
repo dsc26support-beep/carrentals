@@ -61,6 +61,9 @@ for (const [w, h, tag] of [[390, 844, "mobile"], [1280, 900, "desktop"]]) {
       .evaluate((i) => { const r = i.getBoundingClientRect(); return r.height > 0 && r.height < r.width; }));
   check("images are lazy after the first",
     await p.locator(".gallery__slide img").evaluateAll((n) => n.slice(1).every((i) => i.loading === "lazy")));
+  check("a borrowed photo says so",
+    await p.locator(".vehicle").first().locator(".gallery__caption").textContent(),
+    "Photo shows the model");
   check("specs listed", await p.locator(".vehicle").first().locator(".specs li").count(), 6);
   check("recommendations shown", await p.locator(".vehicle").first().locator(".also__card").count(), 3);
   check("recommendations exclude the open car",

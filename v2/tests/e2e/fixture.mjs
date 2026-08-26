@@ -5,7 +5,8 @@ export const VEHICLES = [
     air_conditioning: true, specifications: ["5 doors", "Hatchback boot"], display_order: 10,
     vehicle_images: [
       { storage_path: "march/front.jpg", alt: "Red Nissan March, front view", is_primary: true,  display_order: 0, width: 1200, height: 800 },
-      { storage_path: "march/rear.jpg",  alt: "Red Nissan March, rear view",  is_primary: false, display_order: 1, width: 1200, height: 800 }
+      { storage_path: "march/rear.jpg",  alt: "Red Nissan March, rear view",  is_primary: false, display_order: 1, width: 1200, height: 800,
+        caption: "Photo shows the model" }
     ] },
   { id: "v2", slug: "honda-fit", name: "Honda Fit", price_per_day: "60.00", currency: "AUD",
     is_available: true, description: null, seats: 5, transmission: "automatic", fuel: "petrol",
