@@ -13,6 +13,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { buildBundle } from "../scripts/bundle-functions.mjs";
 
 const CHECK = path.resolve(import.meta.dirname, "../scripts/check.mjs");
 
@@ -89,4 +90,41 @@ test("guard 4: allows an unticked one", () => {
 test("guard 5: rejects an image with no alt text", () => {
   assert.equal(guards({ "public/index.html": '<img src="car.jpg">' }).failed, true);
   assert.equal(guards({ "public/index.html": '<img src="car.jpg" alt="A red car">' }).failed, false);
+});
+
+/* --- guard 6: the deployable bundle ---------------------------------------
+   The bundle is a generated copy of code that also lives in shared/, which is
+   exactly the arrangement that drifts. These test the generator; check.mjs
+   compares its output against what is committed. */
+
+test("bundle: inlines the shared modules and leaves no module syntax", () => {
+  const out = buildBundle("submit-request");
+
+  // Everything the handler calls must be declared in the file it is pasted as.
+  for (const symbol of ["validateRequest", "throttleDecision", "isHoneypotTrapped",
+                        "buildNotification", "shapeResponse", "THROTTLE"]) {
+    assert.match(out, new RegExp(`^(const|function) ${symbol}\\b`, "m"), `${symbol} missing`);
+  }
+
+  // A dashboard deploy is one file: an import or export left behind would be a
+  // runtime error the moment it is pasted.
+  assert.doesNotMatch(out, /^import\s/m);
+  assert.doesNotMatch(out, /^export\s/m);
+  assert.match(out, /Deno\.serve\(/);
+});
+
+test("bundle: tracks its sources, so a drifted copy cannot look current", () => {
+  const before = buildBundle("submit-request");
+  const file = new URL("../shared/request-logic.js", import.meta.url);
+  const original = fs.readFileSync(file, "utf8");
+
+  try {
+    fs.writeFileSync(file, original.replace("perIp: 5,", "perIp: 6,"));
+    assert.notEqual(buildBundle("submit-request"), before,
+      "a change in shared/ must change the bundle, or guard 6 proves nothing");
+  } finally {
+    fs.writeFileSync(file, original);
+  }
+
+  assert.equal(buildBundle("submit-request"), before, "restore failed");
 });

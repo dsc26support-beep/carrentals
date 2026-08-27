@@ -48,6 +48,8 @@ select pg_temp.check('campaigns invisible',         pg_temp.rows('select 1 from 
 select pg_temp.check('admin_users invisible',       pg_temp.rows('select 1 from admin_users') = 0);
 select pg_temp.check('audit log invisible',         pg_temp.rows('select 1 from admin_audit_log') = 0);
 select pg_temp.check('sees only public settings',   pg_temp.rows('select 1 from site_settings') = 8);
+select pg_temp.check('notify address invisible',    pg_temp.rows($$select 1 from site_settings where key='notify.request_email'$$) = 0);
+select pg_temp.check('throttle invisible',          pg_temp.rows('select 1 from request_throttle') = 0);
 select pg_temp.check('cannot insert a customer',    pg_temp.rejects($$insert into customers(name,email,phone) values('X','x@y.co','+68673011111')$$));
 select pg_temp.check('cannot insert a request',     pg_temp.rejects($$insert into rental_requests(customer_id,vehicle_name,quoted_price) values(gen_random_uuid(),'X',60)$$));
 -- -1, not 0: anon holds no UPDATE or DELETE grant on any table, so it is
@@ -84,7 +86,13 @@ select pg_temp.check('is_admin() true',             public.is_admin());
 select pg_temp.check('sees all 5 vehicles',         pg_temp.rows('select 1 from vehicles') = 5);
 select pg_temp.check('sees customers',              pg_temp.rows('select 1 from customers') >= 1);
 select pg_temp.check('sees requests',               pg_temp.rows('select 1 from rental_requests') >= 1);
-select pg_temp.check('sees all settings',           pg_temp.rows('select 1 from site_settings') = 8);
+-- 9 now, not 8: 0009 adds notify.request_email, which is private. The anon
+-- block above asserts the other side of the same fact.
+select pg_temp.check('sees all settings',           pg_temp.rows('select 1 from site_settings') = 9);
+select pg_temp.check('sees the notify address',     pg_temp.rows($$select 1 from site_settings where key='notify.request_email'$$) = 1);
+-- Nobody needs to read a table of who has been rate-limited, administrators
+-- included. There is no policy for them, so there are no rows.
+select pg_temp.check('CANNOT read the throttle',    pg_temp.rows('select 1 from request_throttle') = 0);
 select pg_temp.check('can change availability',     pg_temp.affected($$update vehicles set is_available=false where slug='honda-fit'$$) = 1);
 select pg_temp.check('can advance a request',       pg_temp.affected($$update rental_requests set status='contacted'$$) >= 1);
 select pg_temp.check('CANNOT create an admin',      pg_temp.rejects($$insert into admin_users(user_id,email) values('22222222-2222-2222-2222-222222222222','nobody@example.com')$$));
@@ -99,5 +107,12 @@ set role service_role;
 select pg_temp.check('can insert a customer',       not pg_temp.rejects($$insert into customers(name,email,phone) values('Edge','edge@example.com','+68673022222')$$));
 select pg_temp.check('can write the audit log',     not pg_temp.rejects($$insert into admin_audit_log(action,entity) values('vehicle.update','vehicles')$$));
 select pg_temp.check('can create an administrator', not pg_temp.rejects($$insert into admin_users(user_id,email) values('22222222-2222-2222-2222-222222222222','nobody@example.com')$$));
+-- The throttle is the service role's alone: the handler counts with it and
+-- nothing else touches it.
+select pg_temp.check('can count a request',         not pg_temp.rejects($$insert into request_throttle(key_hash,count) values(repeat('a',64),1)$$));
+select pg_temp.check('sees the throttle it wrote',  pg_temp.rows('select 1 from request_throttle') = 1);
+-- The handler calls this occasionally. It swallows failures, so without this
+-- assertion a missing grant would show up as a table that grew forever.
+select pg_temp.check('can sweep old throttle rows', not pg_temp.rejects($$select public.prune_request_throttle()$$));
 reset role;
 reset request.jwt.claim.sub;

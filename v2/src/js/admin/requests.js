@@ -73,6 +73,15 @@ function card(request, me, refresh, say) {
       person.email ? el("a", { class: "btn", href: `mailto:${person.email}`, text: "Email" }) : null
     ]),
 
+    // The car was out with somebody else when they asked. The request was let
+    // through anyway — a phone call sorts that out better than a form does —
+    // so this is the reminder to mention it before promising anything.
+    request.vehicle_was_unavailable
+      ? el("p", { class: "row__flag" },
+          [el("strong", { text: "That car was out when they asked. " }),
+           el("span", { text: "Check it is free before you agree a day." })])
+      : null,
+
     request.message ? el("p", { class: "row__meta", text: `"${request.message}"` }) : null,
 
     NEXT[request.status].length
