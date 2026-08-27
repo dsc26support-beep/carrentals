@@ -22,7 +22,14 @@ const REQUESTS = [
   { id: "r1", reference: "A3F91C24", status: "pending", vehicle_name: "Nissan March",
     quoted_price: "60.00", currency: "AUD", message: "Arriving Friday",
     created_at: new Date(Date.now() - 7200000).toISOString(),
-    customers: { id: "c1", name: "Tabweaka", email: "t@example.com", phone: "+68673012345" } }
+    customers: { id: "c1", name: "Tabweaka", email: "t@example.com", phone: "+68673012345" },
+    vehicle_was_unavailable: false },
+  { id: "r2", reference: "B7D40E11", status: "pending", vehicle_name: "Honda Fit",
+    quoted_price: "60.00", currency: "AUD", message: null,
+    created_at: new Date(Date.now() - 600000).toISOString(),
+    customers: { id: "c2", name: "Ioane", email: "i@example.com", phone: "+68673098765" },
+    // asked for a car that was out with somebody else
+    vehicle_was_unavailable: true }
 ];
 
 async function open({ admin = ADMIN, badLogin = false } = {}) {
@@ -133,7 +140,7 @@ console.log("\n--- dashboard ---");
   await p.waitForSelector(".tiles", { timeout: 8000 });
   const tiles = await p.locator(".tile dd").allTextContents();
   check("four numbers", tiles.length, 4);
-  check("one request waiting", tiles[0], "1");
+  check("both requests waiting", tiles[0], "2");
   check("one car available", tiles[1], "1");
   check("one car out", tiles[2], "1");
   check("no errors", p.errors, []);
@@ -181,16 +188,42 @@ console.log("\n--- requests ---");
   check("pending selected first", await p.locator('.pill[aria-pressed="true"]').textContent(), "pending");
   check("the request shows", await p.locator(".row__name").first().textContent(), "Tabweaka");
   check("calling is the primary action",
-    (await p.locator(".contact-actions .btn--solid").textContent()).includes("Call"));
+    (await p.locator(".contact-actions .btn--solid").first().textContent()).includes("Call"));
   check("call link is a real tel:",
     await p.locator(".contact-actions a").first().getAttribute("href"), "tel:+68673012345");
 
-  await p.click('button:has-text("Mark contacted")');
+  await p.locator('button:has-text("Mark contacted")').first().click();
   await p.waitForTimeout(600);
   check("status change sent", p.state.patches.some((x) => x.patch.status === "contacted"));
   check("handler and time set together",
     Object.keys(p.state.patches.find((x) => x.patch.status).patch).sort(),
     ["handled_at", "handled_by", "status"]);
+  check("no errors", p.errors, []);
+  await p.shut();
+}
+
+console.log("\n--- a request for a car that was out ---");
+{
+  const p = await open();
+  await p.fill("#s-email", "o@e.com"); await p.fill("#s-password", "x");
+  await p.click("#signin-submit");
+  await p.waitForSelector("#shell:not([hidden])");
+  await p.click('#nav a[href="#requests"]');
+  await p.waitForSelector(".pills", { timeout: 8000 });
+
+  check("both requests show", await p.locator(".row").count(), 2);
+
+  // The flag belongs to the second request and must not bleed onto the first.
+  check("exactly one is flagged", await p.locator(".row__flag").count(), 1);
+  check("flagged row is the right one",
+    await p.locator(".row", { has: p.locator(".row__flag") }).locator(".row__name").textContent(),
+    "Ioane");
+  check("the flag says the car was out",
+    (await p.locator(".row__flag").textContent()).includes("was out when they asked"));
+
+  // It is a caution, not a refusal: the request is still workable.
+  check("still actionable", await p.locator(".row", { has: p.locator(".row__flag") })
+    .locator('button:has-text("Mark contacted")').count(), 1);
   check("no errors", p.errors, []);
   await p.shut();
 }

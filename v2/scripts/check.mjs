@@ -10,6 +10,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { buildBundle, bundlePath, functionNames } from "./bundle-functions.mjs";
 
 // Defaults to the project, but takes a root so the guards can be run against
 // fixture trees — a guard nobody tests is a guard that quietly stops working.
@@ -48,7 +49,14 @@ const read = (f) => fs.readFileSync(f, "utf8");
    see them at all — an earlier version of this guard let a pasted
    `sb_secret_…` key through untouched. Prefix matching is the only option for
    an opaque token. */
-for (const file of shipped) {
+// The Edge Functions are scanned too. They are the only code that legitimately
+// handles the service-role key, which makes them the only place a real one
+// could get pasted in during a debugging session and committed. They read it
+// from the environment; a literal here would be the mistake worth catching.
+const keyScanned = [...shipped, ...walk(path.join(ROOT, "supabase/functions"))
+  .filter((f) => /\.(ts|js|mjs)$/.test(f))];
+
+for (const file of keyScanned) {
   const text = read(file);
 
   for (const token of text.match(/eyJ[A-Za-z0-9_-]{10,}/g) || []) {
@@ -56,17 +64,21 @@ for (const file of shipped) {
     try { role = JSON.parse(Buffer.from(token, "base64url").toString()).role; }
     catch { continue; }                       // not a JWT payload segment
     if (role && role !== "anon") {
-      fail("privileged key shipped to the browser", rel(file), `a JWT with role "${role}"`);
+      fail("privileged key committed", rel(file), `a JWT with role "${role}"`);
     }
   }
 
   for (const key of text.match(/\bsb_[a-z]+_[A-Za-z0-9_-]{8,}/g) || []) {
     if (!key.startsWith("sb_publishable_")) {
-      fail("privileged key shipped to the browser", rel(file), key.slice(0, 18) + "…");
+      fail("privileged key committed", rel(file), key.slice(0, 18) + "…");
     }
   }
+}
 
-  if (/service_role/.test(text)) {
+// This one stays browser-only: an Edge Function naming the service role is
+// doing its job, and a page mentioning it is not.
+for (const file of shipped) {
+  if (/service_role/.test(read(file))) {
     fail("service_role referenced in shipped code", rel(file), "it belongs only in Edge Functions");
   }
 }
@@ -117,8 +129,31 @@ for (const file of shipped.filter((f) => f.endsWith(".html"))) {
   }
 }
 
+/* 6 ── The deployable bundle matches the source it was made from ---------
+   The Supabase dashboard takes one file, so each Edge Function is committed
+   twice: as source with imports, and as a flattened bundle.ts that is what
+   actually gets pasted. A copy that can drift is exactly the failure this
+   project already refused once, when _shared/validate.ts was made a re-export
+   rather than a second set of validation rules. So the bundle is rebuilt here
+   and compared. If this fails, run `npm run bundle`. */
+// Scoped to a real checkout. tests/check.test.mjs points --root at fixture
+// trees that have no Edge Functions at all, and a bundle check against those
+// would be reporting on this repository rather than on the tree under test.
+const hasFunctions = fs.existsSync(path.join(ROOT, "supabase/functions"));
+for (const name of hasFunctions ? functionNames : []) {
+  const out = bundlePath(name);
+  if (!fs.existsSync(out)) {
+    fail("function bundle missing", `supabase/functions/${name}/bundle.ts`, "run npm run bundle");
+    continue;
+  }
+  if (fs.readFileSync(out, "utf8") !== buildBundle(name)) {
+    fail("function bundle is stale", rel(out),
+         "its source changed since it was generated — run npm run bundle");
+  }
+}
+
 /* ── report ─────────────────────────────────────────────────────────────── */
-const RULES = 5;
+const RULES = 6;
 if (failures.length === 0) {
   console.log(`check: ${RULES} rules, ${shipped.length} files, all clear`);
   process.exit(0);

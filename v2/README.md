@@ -27,28 +27,32 @@ hashed bundles in `dist/`.
 ## Running the tests
 
 ```sh
-npm run check               # 5 guards (see below)
-npm test                    # 15 unit assertions on the shared validator
-npm run test:db             # 61 database assertions (see below)
+npm run check               # 6 guards (see below)
+npm test                    # 46 unit assertions: the validator, the guards, the bundler
+npm run test:db             # 80 database assertions (see below)
 npm run test:e2e            # 74 browser assertions against the customer page
-npm run test:all            # guards + unit + browser
+npm run test:e2e:admin      # 47 browser assertions against the back office
+npm run test:all            # guards + unit + both browser suites
+
+npm run bundle              # regenerate the pasteable Edge Function files
 ```
 
 `.github/workflows/v2-ci.yml` runs all of these on every push that touches
 `v2/`. It is scoped by path so it never runs against V1.
 
-### The five guards
+### The six guards
 
 `npm run check` fails the build on any of these, because a rule enforced by the
 build survives and a rule kept in someone's head does not:
 
 | # | Rule |
 |---|---|
-| 1 | No privileged key reaches the browser, in **either** Supabase key format: legacy JWTs are decoded and their role checked; the newer opaque `sb_secret_…` keys are matched by prefix, since they are not JWTs and no amount of decoding will see them |
+| 1 | No privileged key is committed anywhere — the browser code and the Edge Functions alike — in **either** Supabase key format: legacy JWTs are decoded and their role checked; the newer opaque `sb_secret_…` keys are matched by prefix, since they are not JWTs and no amount of decoding will see them |
 | 2 | No date, calendar or booking-dates identifier creeps back into customer-facing code |
 | 3 | No customer-facing string claims a rental is confirmed, booked or reserved |
 | 4 | The marketing consent box is never pre-ticked |
 | 5 | No `<img>` without alt text |
+| 6 | Each Edge Function's committed `bundle.ts` still matches the source it was generated from |
 
 `tests/check.test.mjs` runs the guards against fixture trees and asserts each
 one both **fires on a violation** and **stays quiet on the legitimate near-miss**

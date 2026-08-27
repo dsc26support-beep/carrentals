@@ -63,3 +63,29 @@ from customers c, vehicles v where v.slug = 'honda-fit' limit 1;
 select pg_temp.check('request defaults to pending', (select status = 'pending' from rental_requests limit 1));
 select pg_temp.check('reference generated',         (select reference ~ '^[0-9A-F]{8}$' from rental_requests limit 1));
 select pg_temp.check('customer delete restricted',  pg_temp.rejects($$delete from customers$$));
+select pg_temp.check('car assumed available',       (select vehicle_was_unavailable = false from rental_requests limit 1));
+
+\echo ''
+\echo '--- the rate limit ---'
+-- The handler stores a salted SHA-256 and never an address. The constraint is
+-- what keeps that true: anything that is not a 64-character hex digest is not
+-- a hash, and an IP written in by mistake would be refused here.
+select pg_temp.check('accepts a real digest',       not pg_temp.rejects($$insert into request_throttle(key_hash,count) values(repeat('9f',32),1)$$));
+select pg_temp.check('REFUSES a raw address',       pg_temp.rejects($$insert into request_throttle(key_hash) values('203.0.113.7')$$));
+select pg_temp.check('REFUSES a short hash',        pg_temp.rejects($$insert into request_throttle(key_hash) values(repeat('a',63))$$));
+select pg_temp.check('REFUSES uppercase hex',       pg_temp.rejects($$insert into request_throttle(key_hash) values(repeat('A',64))$$));
+select pg_temp.check('REFUSES a negative count',    pg_temp.rejects($$insert into request_throttle(key_hash,count) values(repeat('b',64),-1)$$));
+select pg_temp.check('one row per caller',          pg_temp.rejects($$insert into request_throttle(key_hash) values(repeat('9f',32))$$));
+select pg_temp.check('window starts now',           (select window_start > now() - interval '1 minute' from request_throttle limit 1));
+
+-- Sweeping old rows is how this table stays a counter rather than a history of
+-- who visited the website.
+update request_throttle set window_start = now() - interval '2 days';
+select public.prune_request_throttle();
+select pg_temp.check('old rows swept',              (select count(*) = 0 from request_throttle));
+
+\echo ''
+\echo '--- where the notification goes ---'
+select pg_temp.check('notify address exists',       (select count(*) = 1 from site_settings where key = 'notify.request_email'));
+select pg_temp.check('and is NOT public',           (select is_public = false from site_settings where key = 'notify.request_email'));
+select pg_temp.check('still 8 public settings',     (select count(*) = 8 from site_settings where is_public));

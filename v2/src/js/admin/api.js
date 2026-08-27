@@ -56,6 +56,7 @@ export const updateVehicle = (id, patch) =>
 
 const REQUEST_FIELDS =
   "id,reference,status,vehicle_name,quoted_price,currency,message,created_at,handled_at," +
+  "vehicle_was_unavailable," +
   "customers(id,name,email,phone)";
 
 export function listRequests({ status = null, limit = 25, offset = 0 } = {}) {

@@ -64,6 +64,14 @@ main.admin { max-width: 1100px; margin-inline: auto; padding: 22px var(--gap) 80
 .row__meta { font-size: 13.5px; color: var(--muted); }
 .row__actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+/* The car was out when they asked. Coloured like a caution, not an error —
+   the request is perfectly good, it just needs a sentence on the phone. */
+.row__flag {
+  font-size: 13.5px; color: var(--note); background: var(--pink-pale);
+  border-left: 3px solid var(--note); border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 8px 12px; margin: 0;
+}
+
 /* ---------- the availability toggle: the control used most ---------- */
 .toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
 .toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
